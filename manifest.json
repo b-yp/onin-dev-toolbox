@@ -1,0 +1,11 @@
+{
+  "id": "com.example.onin-dev-toolbox",
+  "name": "Onin Dev Toolbox",
+  "version": "0.1.0",
+  "description": "Onin Dev Toolbox plugin for Onin",
+  "entry": "dist/index.html",
+  "icon": "icon.svg",
+  "type": "webview",
+  "display_mode": "inline",
+  "background": "dist/background.js"
+}

@@ -1,0 +1,32 @@
+{
+  "name": "onin-dev-toolbox",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:background": "vite build --config vite.background.config.ts",
+    "build": "npm run build:index && npm run build:background",
+    "pack:plugin": "npm run build && bestzip plugin.zip manifest.json icon.svg dist",
+    "dev": "vite",
+    "build:index": "vite build",
+    "release": "semantic-release"
+  },
+  "dependencies": {
+    "onin-sdk": "^1.6.0",
+    "vue": "^3.5.29"
+  },
+  "devDependencies": {
+    "bestzip": "^2.2.1",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "typescript": "^5.5.0",
+    "vite": "^7.3.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^12.0.6",
+    "@semantic-release/npm": "^13.1.5",
+    "@semantic-release/release-notes-generator": "^14.1.0",
+    "semantic-release": "^25.0.3"
+  }
+}
