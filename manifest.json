@@ -7,5 +7,12 @@
   "icon": "icon.svg",
   "type": "webview",
   "display_mode": "inline",
-  "background": "dist/background.js"
+  "background": "dist/background.js",
+  "devMode": true,
+  "devServer": "http://localhost:5173",
+  "permissions": {
+    "storage": {
+      "enable": true
+    }
+  }
 }
