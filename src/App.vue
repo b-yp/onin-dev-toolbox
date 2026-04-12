@@ -5,6 +5,7 @@ import { TOOLS, CATEGORIES, type ToolCategory, type Tool } from './config/tools'
 import Sidebar from './components/Sidebar.vue';
 import SearchBar from './components/SearchBar.vue';
 import ToolCard from './components/ToolCard.vue';
+import ToolRenderer from './components/ToolRenderer.vue';
 
 const props = defineProps<{
   pluginName: string;
@@ -15,6 +16,7 @@ const props = defineProps<{
 const activeCategory = ref<ToolCategory | 'All'>('All');
 const searchQuery = ref('');
 const favorites = ref<Set<string>>(new Set());
+const currentToolId = ref<string | null>(null);
 
 // Load favorites from Onin Storage
 const loadFavorites = async () => {
@@ -83,14 +85,18 @@ const filteredTools = computed(() => {
 });
 
 const handleClickTool = (id: string) => {
-  console.log('Open tool:', id);
-  // Future: navigation to tool-specific page
+  currentToolId.value = id;
+};
+
+const handleBack = () => {
+  currentToolId.value = null;
 };
 </script>
 
 <template>
   <div class="app-container">
     <Sidebar
+      v-if="!currentToolId"
       :active-category="activeCategory"
       :categories="CATEGORIES"
       :plugin-name="props.pluginName"
@@ -98,33 +104,42 @@ const handleClickTool = (id: string) => {
     />
     
     <main class="main-content">
-      <SearchBar @search="handleSearch" />
-      
-      <div class="content-body">
-        <header class="content-header">
-          <h2>{{ CATEGORIES.find(c => c.id === activeCategory)?.name }}</h2>
-          <p class="count-badge">{{ filteredTools.length }} 个工具</p>
-        </header>
-
-        <div v-if="filteredTools.length > 0" class="tool-grid">
-          <ToolCard
-            v-for="tool in filteredTools"
-            :key="tool.id"
-            :tool="tool"
-            :is-favorite="favorites.has(tool.id)"
-            @toggle-favorite="toggleFavorite"
-            @click-tool="handleClickTool"
-          />
-        </div>
+      <template v-if="!currentToolId">
+        <SearchBar @search="handleSearch" />
         
-        <div v-else class="empty-state">
-          <div class="empty-icon">🔍</div>
-          <p>没有找到相关工具</p>
-          <button v-if="activeCategory !== 'All'" @click="activeCategory = 'All'" class="reset-btn">
-            查看所有工具
-          </button>
+        <div class="content-body">
+          <header class="content-header">
+            <h2>{{ CATEGORIES.find(c => c.id === activeCategory)?.name }}</h2>
+            <p class="count-badge">{{ filteredTools.length }} 个工具</p>
+          </header>
+
+          <div v-if="filteredTools.length > 0" class="tool-grid">
+            <ToolCard
+              v-for="tool in filteredTools"
+              :key="tool.id"
+              :tool="tool"
+              :is-favorite="favorites.has(tool.id)"
+              @toggle-favorite="toggleFavorite"
+              @click-tool="handleClickTool"
+            />
+          </div>
+          
+          <div v-else class="empty-state">
+            <div class="empty-icon">🔍</div>
+            <p>没有找到相关工具</p>
+            <button v-if="activeCategory !== 'All'" @click="activeCategory = 'All'" class="reset-btn">
+              查看所有工具
+            </button>
+          </div>
         </div>
-      </div>
+      </template>
+
+      <template v-else>
+        <ToolRenderer 
+          :tool-id="currentToolId" 
+          @back="handleBack" 
+        />
+      </template>
     </main>
   </div>
 </template>
