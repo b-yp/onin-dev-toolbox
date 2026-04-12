@@ -17,6 +17,8 @@ const ToolComponent = computed(() => {
   switch (props.toolId) {
     case 'json-format':
       return defineAsyncComponent(() => import('./tools/JsonFormatter.vue'));
+    case 'base64':
+      return defineAsyncComponent(() => import('./tools/Base64Converter.vue'));
     // Add more tools here as they are implemented
     default:
       return null;
