@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { toast } from 'onin-sdk';
 import Editor from '../Editor.vue';
 
 const input = ref('');
@@ -50,7 +51,7 @@ const handleCopy = () => {
   if (!textToCopy) return;
   
   navigator.clipboard.writeText(textToCopy).then(() => {
-    alert('已复制到剪贴板');
+    toast.success('已复制到剪贴板');
   });
 };
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { toast } from 'onin-sdk';
 import Editor from '../Editor.vue';
 
 const input = ref('');
@@ -53,7 +54,7 @@ const handleClear = () => {
 const handleCopy = () => {
   if (!output.value) return;
   navigator.clipboard.writeText(output.value).then(() => {
-    alert('已复制到剪贴板');
+    toast.success('已复制到剪贴板');
   });
 };
 
