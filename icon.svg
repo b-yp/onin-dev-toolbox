@@ -1,7 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none">
-  <rect width="128" height="128" rx="28" fill="#111827" />
-  <path
-    d="M33 88V40h18l13 27 13-27h18v48H81V62L69 86H59L47 62v26H33Z"
-    fill="#F9FAFB"
-  />
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Premium Dark Background -->
+  <rect width="128" height="128" rx="28" fill="#111827"/>
+  
+  <!-- Perfect Regular Hexagon (Pointy Top, R=56) -->
+  <path d="M64 8L112.5 36V92L64 120L15.5 92V36L64 8Z" stroke="#F59E0B" stroke-width="5" stroke-linejoin="round"/>
+  
+  <!-- Enlarged Code Brackets (Symmetrical and Centered) -->
+  <path d="M54 44L38 64L54 84" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M74 44L90 64L74 84" stroke="white" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
