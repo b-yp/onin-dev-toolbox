@@ -75,9 +75,6 @@ const handleSwap = () => {
       </div>
       
       <div class="toolbar-right">
-        <button @click="handleSwap" class="action-btn ghost" title="交换输入输出">
-          <span>🔄</span> 交换
-        </button>
         <button @click="handleClear" class="action-btn ghost danger">清空</button>
         <button @click="handleCopy" class="action-btn accent">
           <span>📋</span> 复制结果
@@ -101,12 +98,12 @@ const handleSwap = () => {
         </div>
       </div>
 
-      <!-- Arrow spacer -->
-      <div class="spacer-arrow">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M5 12h14M12 5l7 7-7 7" />
+      <!-- Swap button between panes -->
+      <button @click="handleSwap" class="spacer-btn" title="交换输入输出">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M7 16l-4-4 4-4M17 8l4 4-4 4M3 12h18" />
         </svg>
-      </div>
+      </button>
 
       <!-- Output Pane -->
       <div class="pane">
@@ -258,10 +255,32 @@ const handleSwap = () => {
   overflow: hidden;
 }
 
-.spacer-arrow {
+.spacer-btn {
   display: flex;
   align-items: center;
-  color: rgba(255, 255, 255, 0.15);
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.3);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  align-self: center;
+  z-index: 5;
+}
+
+.spacer-btn:hover {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #fff;
+  transform: scale(1.1) rotate(180deg);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+.spacer-btn:active {
+  transform: scale(0.95) rotate(180deg);
 }
 
 .error-state {
@@ -278,9 +297,12 @@ const handleSwap = () => {
   .main-layout {
     flex-direction: column;
   }
-  .spacer-arrow {
+  .spacer-btn {
     justify-content: center;
     transform: rotate(90deg);
+  }
+  .spacer-btn:hover {
+    transform: scale(1.1) rotate(270deg);
   }
 }
 </style>
