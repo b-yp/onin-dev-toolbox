@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+/* 垂直的主题变量在 :root 中已定义，这里我们增强它们 */
+@theme {
+  --color-accent: #3b82f6;
+  --color-border-subtle: rgba(255, 255, 255, 0.05);
+  --color-bg-card: rgba(255, 255, 255, 0.02);
+}
+
+/* 工具箱公共组件 (使用 Tailwind 4 @utility) */
+
+@utility main-layout {
+  @apply flex-1 flex gap-3 min-h-0 items-stretch max-md:flex-col;
+}
+
+@utility toolbar {
+  @apply flex items-center justify-between bg-white/3 p-2 px-4 rounded-xl border border-white/5 backdrop-blur-md;
+}
+
+@utility toolbar-left {
+  @apply flex items-center gap-3;
+}
+
+@utility toolbar-right {
+  @apply flex items-center gap-3;
+}
+
+@utility divider {
+  @apply w-[1px] h-5 bg-white/10 mx-1;
+}
+
+@utility segmented-control {
+  @apply flex bg-white/5 p-1 rounded-lg;
+}
+
+@utility seg-btn {
+  @apply bg-transparent border-none text-white/50 px-3 py-1 rounded-md text-sm cursor-pointer transition-all duration-200 hover:text-white;
+  &.active {
+    @apply bg-white/10 text-white shadow-sm;
+  }
+}
+
+@utility pane {
+  @apply flex-1 flex flex-col bg-white/2 rounded-xl border border-white/5 overflow-hidden;
+}
+
+@utility pane-header {
+  @apply p-2 px-4 text-xs text-white/50 bg-white/3 border-b border-white/5 uppercase tracking-widest flex justify-between items-center h-9 min-h-[36px];
+}
+
+@utility pane-content {
+  @apply flex-1 overflow-hidden;
+}
+
+@utility pane-actions {
+  @apply flex gap-2;
+}
+
+@utility action-btn {
+  @apply bg-white/5 border border-white/10 text-white px-3 py-1.5 rounded-lg text-sm cursor-pointer flex items-center gap-1.5 transition-all duration-200 hover:bg-white/10;
+  &.accent {
+    @apply bg-blue-600 border-none hover:bg-blue-500 font-medium;
+  }
+  &.ghost {
+    @apply bg-transparent border-transparent text-white/50 hover:bg-white/5 hover:text-white;
+  }
+  &.danger {
+    @apply hover:text-red-500 hover:bg-red-500/10;
+  }
+  &.primary {
+    @apply bg-blue-500/10 border-blue-500/20 text-blue-400 hover:bg-blue-500/20;
+  }
+}
+
+@utility mini-btn {
+  @apply bg-white/8 border-none text-white px-2.5 py-0.5 rounded-md text-[11px] cursor-pointer transition-all duration-200 hover:bg-white/15;
+  &.primary {
+    @apply bg-blue-600;
+  }
+}
+
+@utility spacer-btn {
+  @apply flex items-center justify-center bg-white/5 border border-white/10 text-white/30 w-10 h-10 rounded-full cursor-pointer transition-all duration-300 ease-out self-center z-10 hover:bg-blue-600 hover:border-blue-600 hover:text-white hover:scale-110 hover:rotate-180 hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] active:scale-95 max-md:rotate-90 max-md:hover:rotate-270;
+}
+
+@utility error-state {
+  @apply h-full flex flex-col items-center justify-center p-5 text-red-500;
+}
+
+@utility error-msg {
+  @apply text-sm text-center;
+}
+
+/* 全局滚动条优化 */
+@layer base {
+  ::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-white/10 rounded-full hover:bg-white/20;
+  }
+}

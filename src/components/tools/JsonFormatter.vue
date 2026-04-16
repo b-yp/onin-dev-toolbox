@@ -101,7 +101,7 @@ const handleSample = () => {
       </div>
     </div>
 
-    <div class="editor-container">
+    <div class="main-layout">
       <div class="pane">
         <div class="pane-header">输入 / 编辑</div>
         <div class="editor-view-container">
@@ -136,80 +136,6 @@ const handleSample = () => {
   box-sizing: border-box;
 }
 
-.toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: rgba(255, 255, 255, 0.03);
-  padding: 8px 16px;
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-}
-
-.toolbar-left, .toolbar-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.divider {
-  width: 1px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  margin: 0 4px;
-}
-
-.action-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
-  padding: 6px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.2s;
-}
-
-.action-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.action-btn.primary {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.2);
-  color: #60a5fa;
-}
-
-.action-btn.primary:hover {
-  background: rgba(59, 130, 246, 0.2);
-}
-
-.action-btn.accent {
-  background: var(--accent-color);
-  border: none;
-  font-weight: 500;
-}
-
-.action-btn.ghost {
-  background: transparent;
-  border-color: transparent;
-  color: var(--text-secondary);
-}
-
-.action-btn.ghost:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #fff;
-}
-
-.action-btn.danger:hover {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
-}
-
 .select-input {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -220,56 +146,14 @@ const handleSample = () => {
   outline: none;
 }
 
-.editor-container {
-  flex: 1;
-  display: flex;
-  gap: 16px;
-  min-height: 0;
-}
-
-.pane {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  background: rgba(255, 255, 255, 0.02);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  overflow: hidden;
-}
-
-.pane-header {
-  padding: 8px 16px;
-  font-size: 12px;
-  color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
 .editor-view-container {
   flex: 1;
   overflow: hidden;
 }
 
-.error-state {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  color: #ef4444;
-}
-
 .error-icon {
   font-size: 32px;
   margin-bottom: 12px;
-}
-
-.error-msg {
-  font-size: 13px;
-  text-align: center;
 }
 
 .empty-output {
@@ -280,23 +164,5 @@ const handleSample = () => {
   color: var(--text-secondary);
   font-style: italic;
   font-size: 14px;
-}
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
 }
 </style>
