@@ -21,6 +21,8 @@ const ToolComponent = computed(() => {
       return defineAsyncComponent(() => import('./tools/Base64Converter.vue'));
     case 'timestamp':
       return defineAsyncComponent(() => import('./tools/TimestampConverter.vue'));
+    case 'url-encode':
+      return defineAsyncComponent(() => import('./tools/UrlEncoder.vue'));
     // Add more tools here as they are implemented
     default:
       return null;
