@@ -71,6 +71,13 @@ export const TOOLS: Tool[] = [
     description: '对 URL 进行安全编码及解码',
     icon: 'URL',
     category: 'Network'
+  },
+  {
+    id: 'uuid-generator',
+    name: 'UUID 生成器',
+    description: '生成通用唯一识别码 (v4)',
+    icon: 'ID',
+    category: 'Security'
   }
 ];
 
