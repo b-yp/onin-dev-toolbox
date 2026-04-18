@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/b-yp/onin-dev-toolbox/compare/v1.1.0...v1.2.0) (2026-04-18)
+
+
+### Features
+
+* add UUID generator tool ([2f12388](https://github.com/b-yp/onin-dev-toolbox/commit/2f123888092d9198f10eaaf19cbbddd635e6b0ae))
+
 # [1.1.0](https://github.com/b-yp/onin-dev-toolbox/compare/v1.0.0...v1.1.0) (2026-04-17)
 
 
