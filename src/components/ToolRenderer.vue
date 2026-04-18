@@ -23,6 +23,8 @@ const ToolComponent = computed(() => {
       return defineAsyncComponent(() => import('./tools/TimestampConverter.vue'));
     case 'url-encode':
       return defineAsyncComponent(() => import('./tools/UrlEncoder.vue'));
+    case 'uuid-generator':
+      return defineAsyncComponent(() => import('./tools/UuidGenerator.vue'));
     // Add more tools here as they are implemented
     default:
       return null;
