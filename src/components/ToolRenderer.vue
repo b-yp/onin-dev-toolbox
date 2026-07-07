@@ -25,6 +25,8 @@ const ToolComponent = computed(() => {
       return defineAsyncComponent(() => import('./tools/UrlEncoder.vue'));
     case 'uuid-generator':
       return defineAsyncComponent(() => import('./tools/UuidGenerator.vue'));
+    case 'jwt-decode':
+      return defineAsyncComponent(() => import('./tools/JwtDecoder.vue'));
     case 'hash-calculator':
       return defineAsyncComponent(() => import('./tools/HashCalculator.vue'));
     // Add more tools here as they are implemented
