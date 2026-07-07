@@ -25,6 +25,8 @@ const ToolComponent = computed(() => {
       return defineAsyncComponent(() => import('./tools/UrlEncoder.vue'));
     case 'uuid-generator':
       return defineAsyncComponent(() => import('./tools/UuidGenerator.vue'));
+    case 'hash-calculator':
+      return defineAsyncComponent(() => import('./tools/HashCalculator.vue'));
     // Add more tools here as they are implemented
     default:
       return null;
@@ -53,7 +55,7 @@ const ToolComponent = computed(() => {
     </header>
 
     <div class="tool-viewport">
-      <component :is="ToolComponent" v-if="ToolComponent" />
+      <component :is="ToolComponent" v-if="ToolComponent" :toolId="toolId" />
       <div v-else class="not-implemented">
         <div class="emoji">🛠️</div>
         <h3>工具开发中</h3>

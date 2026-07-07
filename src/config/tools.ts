@@ -31,17 +31,10 @@ export const TOOLS: Tool[] = [
     category: 'Transform'
   },
   {
-    id: 'md5',
-    name: 'MD5 加密',
-    description: '计算字符串的 MD5 哈希值',
-    icon: 'MD5',
-    category: 'Security'
-  },
-  {
-    id: 'sha256',
-    name: 'SHA256 加密',
-    description: '生成安全的 SHA256 哈希散列',
-    icon: 'SHA',
+    id: 'hash-calculator',
+    name: '哈希计算器',
+    description: '计算 MD5、SHA-1、SHA-256、SHA-512 等哈希值',
+    icon: 'HASH',
     category: 'Security'
   },
   {
