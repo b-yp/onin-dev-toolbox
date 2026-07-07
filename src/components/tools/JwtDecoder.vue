@@ -165,92 +165,94 @@ const isExpired = computed(() => {
 </script>
 
 <template>
-  <div class="jwt-decoder">
+  <div class="flex flex-col h-full p-4 gap-4 box-border">
     <!-- 工具栏 -->
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <span class="toolbar-title">JWT 令牌解码</span>
+    <div class="flex items-center justify-between bg-white/[0.03] p-2 px-4 rounded-xl border border-white/5 backdrop-blur-md">
+      <div class="flex items-center gap-3">
+        <span class="text-xs font-semibold text-white/50">JWT 令牌解码</span>
       </div>
-      <div class="toolbar-right">
+      <div class="flex items-center gap-3">
         <button @click="handleClear" class="action-btn ghost danger">清空</button>
       </div>
     </div>
 
     <!-- 主布局 -->
-    <div class="main-layout">
+    <div class="flex-1 flex gap-3 min-h-0 items-stretch md:flex-row flex-col">
       <!-- 输入面板 -->
-      <div class="pane">
-        <div class="pane-header">
+      <div class="flex-1 flex flex-col bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden">
+        <div class="px-4 py-2 text-xs text-white/50 bg-white/[0.03] border-b border-white/5 uppercase tracking-wider h-9 flex items-center">
           <span>输入 JWT 令牌 (Token)</span>
         </div>
-        <div class="pane-content">
+        <div class="flex-1 overflow-hidden">
           <Editor v-model="input" placeholder="请在此处粘贴或输入以 eyJ... 开头的 JWT Token 字符串" />
         </div>
       </div>
 
       <!-- 输出面板 -->
-      <div class="pane result-pane">
-        <div class="pane-header">
+      <div class="flex-1 flex flex-col bg-white/[0.015] rounded-xl border border-white/5 overflow-hidden">
+        <div class="px-4 py-2 text-xs text-white/50 bg-white/[0.03] border-b border-white/5 uppercase tracking-wider h-9 flex justify-between items-center">
           <span>解析结果</span>
           <!-- 状态标识 -->
-          <div class="status-indicators" v-if="payloadData">
-            <span v-if="isExpired" class="status-tag expired-tag">Token 已过期 ⚠️</span>
-            <span v-else class="status-tag active-tag">Token 未过期 ✅</span>
+          <div class="flex items-center gap-2" v-if="payloadData">
+            <span v-if="isExpired" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 border border-red-500/20">Token 已过期 ⚠️</span>
+            <span v-else class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/20">Token 未过期 ✅</span>
           </div>
         </div>
 
-        <div class="pane-content results-scroll-area">
+        <div class="flex-1 overflow-y-auto scroll-smooth">
           <!-- 错误展示 -->
-          <div v-if="error" class="error-state-box">
-            <div class="error-icon">❌</div>
-            <div class="error-message">{{ error }}</div>
+          <div v-if="error" class="p-8 px-6 flex flex-col items-center justify-center text-red-500 text-center gap-3">
+            <div class="text-3xl">❌</div>
+            <div class="font-mono text-xs bg-red-500/10 p-3 rounded-lg border border-red-500/20 word-break: break-all">
+              {{ error }}
+            </div>
           </div>
 
           <!-- 无输入提示 -->
-          <div v-else-if="!payloadData" class="welcome-state-box">
-            <div class="welcome-icon">🔑</div>
+          <div v-else-if="!payloadData" class="h-full flex flex-col items-center justify-center text-white/50 opacity-50 gap-3">
+            <div class="text-5xl">🔑</div>
             <p>等待输入有效的 JWT Token...</p>
           </div>
 
           <!-- 解密展示 -->
-          <div v-else class="jwt-output-container">
+          <div v-else class="flex flex-col gap-4 p-4">
             <!-- 1. Header 卡片 -->
-            <div class="jwt-card header-card">
-              <div class="card-title-row">
-                <span class="card-badge header-badge">头部 (Header)</span>
-                <button @click="handleCopy(headerJsonStr, 'Header')" class="copy-btn">复制 Header 📋</button>
+            <div class="bg-gradient-to-br from-blue-500/5 to-transparent border border-white/5 border-l-3 border-l-blue-500 rounded-xl p-3.5 px-4 flex flex-col gap-3">
+              <div class="flex justify-between items-center">
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-blue-500/15 text-blue-300">头部 (Header)</span>
+                <button @click="handleCopy(headerJsonStr, 'Header')" class="bg-white/5 border border-white/10 text-white/70 px-2 py-0.5 text-[11px] rounded cursor-pointer transition-all hover:bg-blue-500 hover:border-blue-500 hover:text-white">复制 Header 📋</button>
               </div>
-              <div class="card-body-editor">
+              <div class="h-[180px] border border-white/[0.03] rounded-lg bg-black/20 overflow-hidden">
                 <Editor v-model="headerJsonStr" readonly />
               </div>
             </div>
 
             <!-- 2. Payload 卡片 -->
-            <div class="jwt-card payload-card">
-              <div class="card-title-row">
-                <span class="card-badge payload-badge">载荷 (Payload / Claims)</span>
-                <button @click="handleCopy(payloadJsonStr, 'Payload')" class="copy-btn">复制 Payload 📋</button>
+            <div class="bg-gradient-to-br from-violet-500/5 to-transparent border border-white/5 border-l-3 border-l-violet-500 rounded-xl p-3.5 px-4 flex flex-col gap-3">
+              <div class="flex justify-between items-center">
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-violet-500/15 text-violet-300">载荷 (Payload / Claims)</span>
+                <button @click="handleCopy(payloadJsonStr, 'Payload')" class="bg-white/5 border border-white/10 text-white/70 px-2 py-0.5 text-[11px] rounded cursor-pointer transition-all hover:bg-blue-500 hover:border-blue-500 hover:text-white">复制 Payload 📋</button>
               </div>
-              <div class="card-body-editor">
+              <div class="h-[180px] border border-white/[0.03] rounded-lg bg-black/20 overflow-hidden">
                 <Editor v-model="payloadJsonStr" readonly />
               </div>
             </div>
 
             <!-- 3. 智能时间翻译区 -->
-            <div class="jwt-card time-card" v-if="timeClaims.length > 0">
-              <div class="card-title-row">
-                <span class="card-badge time-badge">时间戳翻译 (Claims Time)</span>
+            <div class="bg-gradient-to-br from-emerald-500/5 to-transparent border border-white/5 border-l-3 border-l-emerald-500 rounded-xl p-3.5 px-4 flex flex-col gap-3" v-if="timeClaims.length > 0">
+              <div class="flex justify-between items-center">
+                <span class="text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300">时间戳翻译 (Claims Time)</span>
               </div>
-              <div class="time-list-container">
+              <div class="flex flex-col gap-2">
                 <div 
                   v-for="claim in timeClaims" 
                   :key="claim.key" 
-                  class="time-item-row"
-                  :class="{ 'warning-row': claim.isWarning }"
+                  class="flex items-center justify-between p-2 px-3 bg-white/2 border border-white/[0.03] rounded-lg text-sm"
+                  :class="{ 'border-red-500/15 bg-red-500/[0.02]': claim.isWarning }"
                 >
-                  <span class="time-label">{{ claim.label }}</span>
-                  <span class="time-value">{{ claim.formatted }}</span>
-                  <span class="time-status" v-if="claim.status">{{ claim.status }}</span>
+                  <span class="font-medium text-white/50 w-[120px]">{{ claim.label }}</span>
+                  <span class="font-mono text-white/85 flex-1 text-left">{{ claim.formatted }}</span>
+                  <span class="text-xs font-semibold text-emerald-500" :class="{ 'text-red-400': claim.isWarning }" v-if="claim.status">{{ claim.status }}</span>
                 </div>
               </div>
             </div>
@@ -260,229 +262,3 @@ const isExpired = computed(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.jwt-decoder {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 16px;
-  gap: 16px;
-  box-sizing: border-box;
-}
-
-.toolbar-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-secondary);
-}
-
-.result-pane {
-  background: rgba(255, 255, 255, 0.01);
-}
-
-.results-scroll-area {
-  overflow-y: auto;
-  height: calc(100% - 36px);
-}
-
-/* 错误与空状态 */
-.error-state-box {
-  padding: 32px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #ef4444;
-  text-align: center;
-  gap: 12px;
-}
-
-.error-icon {
-  font-size: 32px;
-}
-
-.error-message {
-  font-family: monospace;
-  font-size: 13px;
-  background: rgba(239, 68, 68, 0.1);
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-  word-break: break-all;
-}
-
-.welcome-state-box {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  opacity: 0.5;
-  gap: 12px;
-}
-
-.welcome-icon {
-  font-size: 48px;
-}
-
-/* 输出卡片容器 */
-.jwt-output-container {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 16px;
-}
-
-.jwt-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.005) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.header-card {
-  border-left: 3px solid #3b82f6;
-  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
-}
-
-.payload-card {
-  border-left: 3px solid #8b5cf6;
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
-}
-
-.time-card {
-  border-left: 3px solid #10b981;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%);
-}
-
-.card-title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.card-badge {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
-  letter-spacing: 0.05em;
-}
-
-.header-badge {
-  background: rgba(59, 130, 246, 0.15);
-  color: #93c5fd;
-}
-
-.payload-badge {
-  background: rgba(139, 92, 246, 0.15);
-  color: #c084fc;
-}
-
-.time-badge {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-}
-
-.copy-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
-  padding: 3px 10px;
-  font-size: 11px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.copy-btn:hover {
-  background: var(--accent-color);
-  border-color: var(--accent-color);
-  color: #fff;
-}
-
-.card-body-editor {
-  height: 180px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-}
-
-/* 状态标签 */
-.status-indicators {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.status-tag {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-
-.active-tag {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.expired-tag {
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-/* 时间列表样式 */
-.time-list-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.time-item-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  border-radius: 6px;
-  font-size: 13px;
-}
-
-.time-item-row.warning-row {
-  border-color: rgba(239, 68, 68, 0.15);
-  background: rgba(239, 68, 68, 0.02);
-}
-
-.time-label {
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.5);
-  width: 120px;
-}
-
-.time-value {
-  font-family: monospace;
-  color: rgba(255, 255, 255, 0.85);
-  flex: 1;
-  text-align: left;
-}
-
-.time-status {
-  font-size: 12px;
-  font-weight: 600;
-  color: #10b981;
-}
-
-.warning-row .time-status {
-  color: #f87171;
-}
-</style>

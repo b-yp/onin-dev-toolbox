@@ -179,48 +179,58 @@ const algos = computed(() => [
   { id: 'sha512' as const, name: 'SHA-512', value: hashResults.value.sha512 },
 ]);
 
+const getBadgeClass = (id: string) => {
+  switch (id) {
+    case 'md5': return 'bg-blue-500/10 text-blue-300 border-blue-500/25';
+    case 'sha1': return 'bg-emerald-500/10 text-emerald-300 border-emerald-500/25';
+    case 'sha256': return 'bg-amber-500/10 text-amber-300 border-amber-500/25';
+    case 'sha512': return 'bg-violet-500/10 text-violet-300 border-violet-500/25';
+    default: return 'bg-white/10 text-white/80 border-white/20';
+  }
+};
+
 </script>
 
 <template>
-  <div class="hash-calculator">
+  <div class="flex flex-col h-full p-4 gap-4 box-border">
     <!-- 工具栏 -->
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <div class="segmented-control">
+    <div class="flex items-center justify-between bg-white/[0.03] p-2 px-4 rounded-xl border border-white/5 backdrop-blur-md">
+      <div class="flex items-center gap-3">
+        <div class="flex bg-white/5 p-[3px] rounded-lg">
           <button 
-            :class="['seg-btn', { active: mode === 'text' }]" 
+            :class="['bg-transparent border-none text-white/50 px-3 py-1 rounded-md text-xs cursor-pointer transition-all hover:text-white', { 'bg-white/10 text-white shadow-sm': mode === 'text' }]" 
             @click="mode = 'text'"
             :disabled="isCalculating"
           >文本模式</button>
           <button 
-            :class="['seg-btn', { active: mode === 'file' }]" 
+            :class="['bg-transparent border-none text-white/50 px-3 py-1 rounded-md text-xs cursor-pointer transition-all hover:text-white', { 'bg-white/10 text-white shadow-sm': mode === 'file' }]" 
             @click="mode = 'file'"
             :disabled="isCalculating"
           >文件模式</button>
         </div>
         
-        <div class="divider"></div>
+        <div class="w-[1px] h-5 bg-white/10"></div>
         
-        <label class="toggle-label">
-          <input type="checkbox" v-model="isUppercase" />
+        <label class="flex items-center gap-2 text-xs text-white/50 cursor-pointer user-select-none">
+          <input type="checkbox" v-model="isUppercase" class="accent-blue-500" />
           <span>大写字母</span>
         </label>
       </div>
       
-      <div class="toolbar-right">
+      <div class="flex items-center gap-3">
         <button @click="handleClear" class="action-btn ghost danger" :disabled="isCalculating">清空</button>
       </div>
     </div>
 
     <!-- 主布局 -->
-    <div class="main-layout" :class="{ 'file-mode': mode === 'file' }">
+    <div class="flex-1 flex gap-3 min-h-0 items-stretch md:flex-row flex-col">
       <!-- 输入面板 -->
-      <div class="pane">
-        <div class="pane-header">
+      <div class="flex-1 flex flex-col bg-white/[0.02] rounded-xl border border-white/5 overflow-hidden">
+        <div class="px-4 py-2 text-xs text-white/50 bg-white/[0.03] border-b border-white/5 uppercase tracking-wider h-9 flex items-center">
           <span>{{ mode === 'text' ? '输入文本' : '选择文件' }}</span>
         </div>
         
-        <div class="pane-content">
+        <div class="flex-1 overflow-hidden">
           <!-- 文本输入 -->
           <template v-if="mode === 'text'">
             <Editor v-model="input" placeholder="请输入待计算哈希的文本内容..." />
@@ -229,11 +239,11 @@ const algos = computed(() => [
           <!-- 文件选择/拖拽 -->
           <template v-else>
             <div 
-              class="drop-zone" 
+              class="h-[calc(100%-32px)] border-2 border-dashed border-white/10 m-4 rounded-xl flex flex-col items-center justify-center text-white/50 transition-all hover:bg-white/[0.03] hover:border-blue-500 hover:text-white"
               @dragover.prevent 
               @drop="handleDrop"
               @click="!isCalculating && ($refs.fileInput as HTMLInputElement).click()"
-              :class="{ 'disabled': isCalculating }"
+              :class="{ 'cursor-not-allowed opacity-70': isCalculating, 'cursor-pointer': !isCalculating }"
             >
               <input 
                 type="file" 
@@ -242,21 +252,23 @@ const algos = computed(() => [
                 @change="handleFileChange" 
                 :disabled="isCalculating"
               />
-              <div class="drop-icon">🛡️</div>
+              <div class="text-5xl mb-3 opacity-60">🛡️</div>
               
               <template v-if="!selectedFile">
                 <p>点击或拖拽文件到此处</p>
-                <span class="file-tip">支持任意格式文件，超大文件自动分块计算</span>
+                <span class="text-[11px] text-white/30 mt-1.5">支持任意格式文件，超大文件自动分块计算</span>
               </template>
               <template v-else>
-                <div class="file-info-box">
-                  <p class="file-name">{{ selectedFile.name }}</p>
-                  <p class="file-size">{{ (selectedFile.size / 1024).toFixed(2) }} KB</p>
+                <div class="text-center w-[80%]">
+                  <p class="text-blue-400 font-medium font-mono break-all mb-1">{{ selectedFile.name }}</p>
+                  <p class="text-xs text-white/40 mb-4">{{ (selectedFile.size / 1024).toFixed(2) }} KB</p>
                   
                   <!-- 进度条 -->
-                  <div class="progress-container" v-if="isCalculating">
-                    <div class="progress-bar" :style="{ width: `${fileProgress}%` }"></div>
-                    <span class="progress-text">正在计算: {{ fileProgress }}%</span>
+                  <div class="relative w-full h-5 bg-white/5 rounded-full overflow-hidden border border-white/10" v-if="isCalculating">
+                    <div class="h-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-100 ease-out" :style="{ width: `${fileProgress}%` }"></div>
+                    <span class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[11px] font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
+                      正在计算: {{ fileProgress }}%
+                    </span>
                   </div>
                 </div>
               </template>
@@ -266,37 +278,39 @@ const algos = computed(() => [
       </div>
 
       <!-- 输出面板 -->
-      <div class="pane result-pane">
-        <div class="pane-header">
+      <div class="flex-1 flex flex-col bg-white/[0.015] rounded-xl border border-white/5 overflow-hidden">
+        <div class="px-4 py-2 text-xs text-white/50 bg-white/[0.03] border-b border-white/5 uppercase tracking-wider h-9 flex items-center">
           <span>计算结果</span>
         </div>
         
-        <div class="pane-content results-container">
-          <div class="hash-cards-list">
+        <div class="flex-1 overflow-y-auto p-4 box-border scroll-smooth">
+          <div class="flex flex-col gap-3">
             <div 
               v-for="algo in algos" 
               :key="algo.id" 
-              class="hash-card"
+              class="bg-gradient-to-br from-white/[0.03] to-white/[0.01] border border-white/5 rounded-xl p-3 px-4 flex flex-col gap-2 transition-all hover:from-white/[0.04] hover:to-white/[0.015] hover:border-white/12 hover:shadow-lg"
             >
-              <div class="card-header-row">
-                <span :class="['algo-badge', `${algo.id}-badge`]">{{ algo.name }}</span>
+              <div class="flex justify-between items-center">
+                <span :class="['text-[11px] font-bold px-2 py-0.5 rounded border tracking-wider', getBadgeClass(algo.id)]">
+                  {{ algo.name }}
+                </span>
                 <button 
                   v-if="algo.value" 
                   @click="handleCopy(algo.value, algo.name)" 
-                  class="copy-card-btn"
+                  class="bg-white/5 border border-white/10 text-white/70 px-2 py-0.5 text-[11px] rounded cursor-pointer transition-all hover:bg-blue-500 hover:border-blue-500 hover:text-white"
                   title="复制哈希值"
                 >
                   复制 📋
                 </button>
               </div>
               
-              <div class="card-body-row">
-                <div class="hash-value-display">
+              <div class="flex items-center min-h-[24px]">
+                <div class="font-mono text-[13.5px] text-white/95 break-all select-all leading-relaxed w-full">
                   <template v-if="algo.value">
                     {{ formatHash(algo.value) }}
                   </template>
                   <template v-else>
-                    <span class="placeholder-text">等待输入数据...</span>
+                    <span class="text-white/20 text-xs italic">等待输入数据...</span>
                   </template>
                 </div>
               </div>
@@ -307,229 +321,3 @@ const algos = computed(() => [
     </div>
   </div>
 </template>
-
-<style scoped>
-.hash-calculator {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 16px;
-  gap: 16px;
-  box-sizing: border-box;
-}
-
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text-secondary);
-  cursor: pointer;
-  user-select: none;
-}
-
-.toggle-label input {
-  accent-color: var(--accent-color);
-}
-
-/* 文件拖拽区 */
-.drop-zone {
-  height: calc(100% - 32px);
-  border: 2px dashed rgba(255, 255, 255, 0.1);
-  margin: 16px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s;
-  background: rgba(255, 255, 255, 0.01);
-}
-
-.drop-zone:not(.disabled):hover {
-  background: rgba(255, 255, 255, 0.03);
-  border-color: var(--accent-color);
-  color: #fff;
-}
-
-.drop-zone.disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.drop-icon {
-  font-size: 48px;
-  margin-bottom: 12px;
-  opacity: 0.6;
-}
-
-.file-tip {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.3);
-  margin-top: 6px;
-}
-
-.file-info-box {
-  text-align: center;
-  width: 80%;
-}
-
-.file-name {
-  color: #60a5fa;
-  font-weight: 500;
-  font-family: monospace;
-  word-break: break-all;
-  margin-bottom: 4px;
-}
-
-.file-size {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
-  margin-bottom: 16px;
-}
-
-/* 进度条样式 */
-.progress-container {
-  position: relative;
-  width: 100%;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.progress-bar {
-  height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #60a5fa);
-  transition: width 0.1s ease;
-}
-
-.progress-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 11px;
-  font-weight: bold;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-/* 输出界面 */
-.result-pane {
-  background: rgba(255, 255, 255, 0.015);
-}
-
-.results-container {
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  overflow-y: auto;
-  height: calc(100% - 32px);
-}
-
-.hash-cards-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* 统一的哈希值卡片 */
-.hash-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 10px;
-  padding: 12px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: all 0.2s;
-}
-
-.hash-card:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.015) 100%);
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.card-header-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.algo-badge {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
-  letter-spacing: 0.05em;
-}
-
-/* 个性化算法标签颜色 */
-.md5-badge {
-  background: rgba(59, 130, 246, 0.12) !important;
-  color: #93c5fd !important;
-  border: 1px solid rgba(59, 130, 246, 0.25) !important;
-}
-
-.sha1-badge {
-  background: rgba(16, 185, 129, 0.12) !important;
-  color: #34d399 !important;
-  border: 1px solid rgba(16, 185, 129, 0.25) !important;
-}
-
-.sha256-badge {
-  background: rgba(245, 158, 11, 0.12) !important;
-  color: #fbbf24 !important;
-  border: 1px solid rgba(245, 158, 11, 0.25) !important;
-}
-
-.sha512-badge {
-  background: rgba(139, 92, 246, 0.12) !important;
-  color: #a78bfa !important;
-  border: 1px solid rgba(139, 92, 246, 0.25) !important;
-}
-
-.copy-card-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
-  padding: 2px 8px;
-  font-size: 11px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.copy-card-btn:hover {
-  background: var(--accent-color);
-  border-color: var(--accent-color);
-  color: #fff;
-}
-
-.card-body-row {
-  display: flex;
-  align-items: center;
-  min-height: 24px;
-}
-
-.hash-value-display {
-  font-family: 'Fira Code', 'Cascadia Code', Consolas, monospace;
-  font-size: 13.5px;
-  color: rgba(255, 255, 255, 0.95);
-  word-break: break-all;
-  user-select: all;
-  line-height: 1.45;
-  width: 100%;
-}
-
-.placeholder-text {
-  color: rgba(255, 255, 255, 0.2);
-  font-size: 13px;
-  font-style: italic;
-}
-</style>
