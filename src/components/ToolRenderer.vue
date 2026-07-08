@@ -33,6 +33,8 @@ const ToolComponent = computed(() => {
       return defineAsyncComponent(() => import('./tools/HashCalculator.vue'));
     case 'regex-test':
       return defineAsyncComponent(() => import('./tools/RegexTester.vue'));
+    case 'text-diff':
+      return defineAsyncComponent(() => import('./tools/TextDiff.vue'));
     // Add more tools here as they are implemented
     default:
       return null;

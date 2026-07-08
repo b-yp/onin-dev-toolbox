@@ -71,6 +71,13 @@ export const TOOLS: Tool[] = [
     description: '生成通用唯一识别码 (v4)',
     icon: 'ID',
     category: 'Security'
+  },
+  {
+    id: 'text-diff',
+    name: '文本对比差异',
+    description: '对比两段文本的差异，支持双栏与单栏视图',
+    icon: 'DIFF',
+    category: 'Text'
   }
 ];
 
