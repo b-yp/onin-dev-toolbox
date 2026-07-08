@@ -92,6 +92,13 @@ export const TOOLS: Tool[] = [
     description: '生成强随机密码、开发密钥 Token，排除混淆字符',
     icon: 'KEY',
     category: 'Security'
+  },
+  {
+    id: 'cron-generator',
+    name: 'Cron 表达式助手',
+    description: 'Cron 表达式的中文解析、运行时间预测与可视化生成',
+    icon: 'CRON',
+    category: 'Transform'
   }
 ];
 
