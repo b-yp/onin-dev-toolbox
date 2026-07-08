@@ -1,124 +1,79 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { toast } from 'onin-sdk';
-import Editor from '../Editor.vue';
-import { encodeUrl, decodeUrl } from '../../utils/url';
+import { ref } from 'vue'
+import { toast } from 'onin-sdk'
+import { Copy, Eraser, ArrowRightLeft, ArrowRight, ArrowLeft } from '@lucide/vue'
+import Editor from '../Editor.vue'
+import Button from '../ui/button/Button.vue'
+import { encodeUrl, decodeUrl } from '../../utils/url'
 
-const input = ref('');
-const output = ref('');
-const error = ref<string | null>(null);
-const mode = ref<'component' | 'uri'>('component');
+const input = ref('')
+const output = ref('')
+const error = ref<string | null>(null)
+const mode = ref<'component' | 'uri'>('component')
 
 const handleEncode = () => {
-  if (!input.value.trim()) return;
-  try {
-    output.value = encodeUrl(input.value, mode.value);
-    error.value = null;
-  } catch (e: any) {
-    error.value = '编码失败: ' + e.message;
-  }
-};
+  if (!input.value.trim()) return
+  try { output.value = encodeUrl(input.value, mode.value); error.value = null }
+  catch (e: any) { error.value = '编码失败: ' + e.message }
+}
 
 const handleDecode = () => {
-  if (!input.value.trim()) return;
-  try {
-    output.value = decodeUrl(input.value, mode.value);
-    error.value = null;
-  } catch (e: any) {
-    error.value = '解码失败: 请确保输入是有效的 URL 编码字符串';
-  }
-};
+  if (!input.value.trim()) return
+  try { output.value = decodeUrl(input.value, mode.value); error.value = null }
+  catch (e: any) { error.value = '解码失败: 请确保输入是有效的 URL 编码字符串' }
+}
 
-const handleClear = () => {
-  input.value = '';
-  output.value = '';
-  error.value = null;
-};
+const handleClear = () => { input.value = ''; output.value = ''; error.value = null }
 
 const handleCopy = () => {
-  if (!output.value) return;
-  navigator.clipboard.writeText(output.value).then(() => {
-    toast.success('已复制到剪贴板');
-  });
-};
+  if (!output.value) return
+  navigator.clipboard.writeText(output.value).then(() => toast.success('已复制到剪贴板'))
+}
 
-const handleSwap = () => {
-  const temp = input.value;
-  input.value = output.value;
-  output.value = temp;
-};
+const handleSwap = () => { const temp = input.value; input.value = output.value; output.value = temp }
 </script>
 
 <template>
-  <div class="url-encoder">
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <div class="segmented-control">
-          <button 
-            :class="['seg-btn', { active: mode === 'component' }]" 
-            @click="mode = 'component'"
-            title="编码 URI 组件（包含 & ? = 等）"
-          >URIComponent</button>
-          <button 
-            :class="['seg-btn', { active: mode === 'uri' }]" 
-            @click="mode = 'uri'"
-            title="编码完整 URI（保留 & ? = 等）"
-          >URI</button>
+  <div class="flex flex-col h-full p-4 gap-4 box-border">
+    <div class="flex items-center justify-between bg-[var(--color-card)] p-2 px-4 rounded-xl border border-[var(--color-border)]">
+      <div class="flex items-center gap-3">
+        <div class="flex bg-[var(--color-muted)] p-0.5 rounded-lg">
+          <Button variant="ghost" size="sm" :class="mode === 'component'  ? 'bg-[var(--color-background)] shadow-sm' : ''" @click="mode = 'component'" title="编码 URI 组件（包含 & ? = 等）">URIComponent</Button>
+          <Button variant="ghost" size="sm" :class="mode === 'uri'  ? 'bg-[var(--color-background)] shadow-sm' : ''" @click="mode = 'uri'" title="编码完整 URI（保留 & ? = 等）">URI</Button>
         </div>
       </div>
-      
-      <div class="toolbar-right">
-        <button @click="handleClear" class="action-btn ghost danger">清空</button>
-        <button @click="handleCopy" class="action-btn accent">
-          <span>📋</span> 复制结果
-        </button>
+
+      <div class="flex items-center gap-2">
+        <Button variant="ghost" size="sm" class="hover:text-red-400" @click="handleClear"><Eraser class="size-3.5" />清空</Button>
+        <Button variant="default" size="sm" @click="handleCopy"><Copy class="size-3.5" />复制结果</Button>
       </div>
     </div>
 
-    <div class="main-layout">
-      <!-- Input Pane -->
-      <div class="pane">
-        <div class="pane-header">
-          输入内容
-          <div class="pane-actions">
-            <button @click="handleEncode" class="mini-btn primary">编码</button>
-            <button @click="handleDecode" class="mini-btn">解码</button>
+    <div class="flex-1 flex gap-3 min-h-0 items-stretch max-md:flex-col">
+      <div class="flex-1 flex flex-col bg-[var(--color-card)] rounded-xl border border-[var(--color-border)] overflow-hidden">
+        <div class="px-4 py-2 text-xs text-[var(--color-muted-foreground)] bg-[var(--color-secondary)]/30 border-b border-[var(--color-border)] uppercase tracking-wider h-9 flex items-center justify-between">
+          <span>输入内容</span>
+          <div class="flex gap-1">
+            <Button variant="default" size="sm" class="h-6 text-[11px]" @click="handleEncode"><ArrowRight class="size-3" /> 编码</Button>
+            <Button variant="outline" size="sm" class="h-6 text-[11px]" @click="handleDecode"><ArrowLeft class="size-3" /> 解码</Button>
           </div>
         </div>
-        
-        <div class="pane-content">
+        <div class="flex-1 overflow-hidden">
           <Editor v-model="input" placeholder="输入待编码或解码的 URL 或文本..." />
         </div>
       </div>
 
-      <!-- Swap button between panes -->
-      <button @click="handleSwap" class="spacer-btn" title="交换输入输出">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M7 16l-4-4 4-4M17 8l4 4-4 4M3 12h18" />
-        </svg>
-      </button>
+      <Button variant="outline" size="icon" class="self-center shrink-0 hover:bg-blue-600 hover:border-blue-600 hover:text-white hover:rotate-180 transition-all duration-300 max-md:rotate-90" @click="handleSwap" title="交换输入输出">
+        <ArrowRightLeft class="size-5" />
+      </Button>
 
-      <!-- Output Pane -->
-      <div class="pane">
-        <div class="pane-header">处理结果</div>
-        <div class="pane-content">
+      <div class="flex-1 flex flex-col bg-[var(--color-card)] rounded-xl border border-[var(--color-border)] overflow-hidden">
+        <div class="px-4 py-2 text-xs text-[var(--color-muted-foreground)] bg-[var(--color-secondary)]/30 border-b border-[var(--color-border)] uppercase tracking-wider h-9 flex items-center">处理结果</div>
+        <div class="flex-1 overflow-hidden">
           <Editor v-if="!error" v-model="output" readonly />
-          <div v-else class="error-state">
-            <div class="error-msg">{{ error }}</div>
-          </div>
+          <div v-else class="h-full flex items-center justify-center text-red-500 text-sm p-5 text-center">{{ error }}</div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.url-encoder {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 16px;
-  gap: 16px;
-  box-sizing: border-box;
-}
-</style>
