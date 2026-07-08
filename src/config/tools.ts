@@ -106,6 +106,13 @@ export const TOOLS: Tool[] = [
     description: '双向拆解 URL 各项结构，支持可视化增删、排序与重构参数',
     icon: 'LINK',
     category: 'Transform'
+  },
+  {
+    id: 'yaml-json-converter',
+    name: 'YAML / JSON 互转',
+    description: 'YAML 与 JSON 格式的快速双向互转，支持语法错误校验与缩进自定义',
+    icon: 'Y/J',
+    category: 'Transform'
   }
 ];
 

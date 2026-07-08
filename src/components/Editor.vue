@@ -5,12 +5,14 @@ import { EditorView, keymap, lineNumbers, highlightActiveLineGutter, highlightSp
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { indentOnInput, syntaxHighlighting, defaultHighlightStyle, bracketMatching, foldGutter, foldKeymap } from '@codemirror/language';
 import { json } from '@codemirror/lang-json';
+import { yaml } from '@codemirror/lang-yaml';
 import { oneDark } from '@codemirror/theme-one-dark';
 
 const props = defineProps<{
   modelValue: string;
   readonly?: boolean;
   placeholder?: string;
+  language?: 'json' | 'yaml';
 }>();
 
 const emit = defineEmits<{
@@ -56,7 +58,7 @@ onMounted(() => {
         ...historyKeymap,
         ...foldKeymap,
       ]),
-      json(),
+      props.language === 'yaml' ? yaml() : json(),
       oneDark,
       EditorView.lineWrapping,
       EditorState.readOnly.of(!!props.readonly),
