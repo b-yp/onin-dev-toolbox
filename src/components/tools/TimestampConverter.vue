@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { toast } from 'onin-sdk';
+import { formatDate, timestampToDate, dateToTimestamp } from '../../utils/datetime';
 
 // --- Current Time State ---
 const currentTime = ref(new Date());
@@ -24,11 +25,7 @@ const tsResult = ref('');
 const convertTsToDate = () => {
   if (!tsInput.value) return;
   try {
-    const val = parseInt(tsInput.value);
-    if (isNaN(val)) throw new Error('无效数字');
-    
-    const date = tsUnit.value === 's' ? new Date(val * 1000) : new Date(val);
-    tsResult.value = formatDate(date);
+    tsResult.value = timestampToDate(tsInput.value, tsUnit.value);
   } catch (e) {
     tsResult.value = '转换失败: 无效的时间戳';
   }
@@ -42,26 +39,13 @@ const dtResultMs = ref('');
 const convertDateToTs = () => {
   if (!dtInput.value) return;
   try {
-    const date = new Date(dtInput.value);
-    if (isNaN(date.getTime())) throw new Error('无效日期');
-    
-    dtResultS.value = Math.floor(date.getTime() / 1000).toString();
-    dtResultMs.value = date.getTime().toString();
+    const res = dateToTimestamp(dtInput.value);
+    dtResultS.value = res.s;
+    dtResultMs.value = res.ms;
   } catch (e) {
     dtResultS.value = '转换失败';
     dtResultMs.value = '转换失败';
   }
-};
-
-// --- Helper Functions ---
-const formatDate = (date: Date) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  const h = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const s = String(date.getSeconds()).padStart(2, '0');
-  return `${y}-${m}-${d} ${h}:${min}:${s}`;
 };
 
 const handleNow = () => {

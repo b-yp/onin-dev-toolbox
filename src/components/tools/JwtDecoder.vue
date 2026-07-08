@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue';
 import { toast } from 'onin-sdk';
 import Editor from '../Editor.vue';
+import { parseJwt, formatJwtTimestamp } from '../../utils/jwt';
 
 const input = ref('');
 const error = ref<string | null>(null);
@@ -34,55 +35,21 @@ const handleCopy = (text: string, label: string) => {
   });
 };
 
-// 原生 Base64Url 安全解码（支持中文 UTF-8）
-const base64UrlDecode = (str: string): string => {
-  // 1. 将 Base64Url 转换为标准 Base64
-  let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
-  // 2. 补齐末尾等号
-  while (base64.length % 4) {
-    base64 += '=';
-  }
-  // 3. 解码为二进制字符串
-  const binaryString = atob(base64);
-  // 4. 将二进制字符串编码为 Uint8Array
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  // 5. 使用 TextDecoder 支持多字节 UTF-8 字符（如中文 claims）
-  return new TextDecoder('utf-8').decode(bytes);
-};
-
 // 核心解析逻辑
-const parseJwt = (token: string) => {
+const parseJwtInput = (token: string) => {
   const trimmed = token.trim();
   if (!trimmed) {
     handleClear();
     return;
   }
 
-  const parts = trimmed.split('.');
-  if (parts.length !== 3) {
-    error.value = '无效的 JWT 格式：JWT 必须包含由点 (.) 分隔的三部分。';
-    headerData.value = null;
-    payloadData.value = null;
-    signatureHex.value = null;
-    return;
-  }
-
   try {
-    // 1. 解密并解析 Header
-    const decodedHeader = base64UrlDecode(parts[0]);
-    headerData.value = JSON.parse(decodedHeader);
-    headerJsonStr.value = JSON.stringify(headerData.value, null, 2);
-
-    // 2. 解密并解析 Payload
-    const decodedPayload = base64UrlDecode(parts[1]);
-    payloadData.value = JSON.parse(decodedPayload);
-    payloadJsonStr.value = JSON.stringify(payloadData.value, null, 2);
-
-    // 3. 提取 Signature 占位
-    signatureHex.value = parts[2];
+    const res = parseJwt(trimmed);
+    headerData.value = res.header;
+    headerJsonStr.value = JSON.stringify(res.header, null, 2);
+    payloadData.value = res.payload;
+    payloadJsonStr.value = JSON.stringify(res.payload, null, 2);
+    signatureHex.value = res.signature;
     error.value = null;
   } catch (err: any) {
     error.value = '解析失败：' + err.message;
@@ -94,27 +61,12 @@ const parseJwt = (token: string) => {
 
 // 监听输入
 watch(input, (newVal) => {
-  parseJwt(newVal);
+  parseJwtInput(newVal);
 });
 
 // 格式化时间戳辅助函数
 const formatTimestamp = (timestamp: number) => {
-  if (typeof timestamp !== 'number' || isNaN(timestamp)) return null;
-  try {
-    const date = new Date(timestamp * 1000);
-    if (isNaN(date.getTime())) return null;
-    
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    const hh = String(date.getHours()).padStart(2, '0');
-    const mm = String(date.getMinutes()).padStart(2, '0');
-    const ss = String(date.getSeconds()).padStart(2, '0');
-    
-    return `${y}-${m}-${d} ${hh}:${mm}:${ss}`;
-  } catch {
-    return null;
-  }
+  return formatJwtTimestamp(timestamp);
 };
 
 // 智能提取和翻译时间声明

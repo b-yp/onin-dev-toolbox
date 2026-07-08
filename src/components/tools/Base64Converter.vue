@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 import { toast } from 'onin-sdk';
 import Editor from '../Editor.vue';
+import { encodeBase64, decodeBase64 } from '../../utils/base64';
 
 const input = ref('');
 const output = ref('');
@@ -13,12 +14,7 @@ const mode = ref<'text' | 'file'>('text');
 const handleEncode = () => {
   if (!input.value.trim()) return;
   try {
-    const uint8 = new TextEncoder().encode(input.value);
-    let b64 = btoa(String.fromCharCode(...uint8));
-    if (isUrlSafe.value) {
-      b64 = b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    }
-    output.value = b64;
+    output.value = encodeBase64(input.value, isUrlSafe.value);
     error.value = null;
   } catch (e: any) {
     error.value = '编码失败: ' + e.message;
@@ -28,17 +24,7 @@ const handleEncode = () => {
 const handleDecode = () => {
   if (!input.value.trim()) return;
   try {
-    let b64 = input.value;
-    if (isUrlSafe.value) {
-      b64 = b64.replace(/-/g, '+').replace(/_/g, '/');
-      while (b64.length % 4) b64 += '=';
-    }
-    const binStr = atob(b64);
-    const uint8 = new Uint8Array(binStr.length);
-    for (let i = 0; i < binStr.length; i++) {
-      uint8[i] = binStr.charCodeAt(i);
-    }
-    output.value = new TextDecoder().decode(uint8);
+    output.value = decodeBase64(input.value, isUrlSafe.value);
     error.value = null;
   } catch (e: any) {
     error.value = '解码失败: 请确保输入是有效的 Base64 字符串';

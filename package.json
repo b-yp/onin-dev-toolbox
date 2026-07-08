@@ -9,7 +9,8 @@
     "pack:plugin": "npm run build && bestzip plugin.zip manifest.json icon.svg dist",
     "dev": "vite",
     "build:index": "vite build",
-    "release": "semantic-release"
+    "release": "semantic-release",
+    "test": "vitest run"
   },
   "dependencies": {
     "@codemirror/commands": "^6.10.3",
@@ -37,6 +38,7 @@
     "semantic-release": "^25.0.3",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.5.0",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vitest": "^4.1.10"
   }
 }

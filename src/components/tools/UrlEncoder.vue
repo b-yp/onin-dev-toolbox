@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { toast } from 'onin-sdk';
 import Editor from '../Editor.vue';
+import { encodeUrl, decodeUrl } from '../../utils/url';
 
 const input = ref('');
 const output = ref('');
@@ -11,11 +12,7 @@ const mode = ref<'component' | 'uri'>('component');
 const handleEncode = () => {
   if (!input.value.trim()) return;
   try {
-    if (mode.value === 'component') {
-      output.value = encodeURIComponent(input.value);
-    } else {
-      output.value = encodeURI(input.value);
-    }
+    output.value = encodeUrl(input.value, mode.value);
     error.value = null;
   } catch (e: any) {
     error.value = '编码失败: ' + e.message;
@@ -25,11 +22,7 @@ const handleEncode = () => {
 const handleDecode = () => {
   if (!input.value.trim()) return;
   try {
-    if (mode.value === 'component') {
-      output.value = decodeURIComponent(input.value);
-    } else {
-      output.value = decodeURI(input.value);
-    }
+    output.value = decodeUrl(input.value, mode.value);
     error.value = null;
   } catch (e: any) {
     error.value = '解码失败: 请确保输入是有效的 URL 编码字符串';

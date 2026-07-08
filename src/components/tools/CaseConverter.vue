@@ -2,6 +2,15 @@
 import { ref, computed } from 'vue';
 import { toast } from 'onin-sdk';
 import Editor from '../Editor.vue';
+import {
+  tokenize,
+  toCamelCase,
+  toPascalCase,
+  toSnakeCase,
+  toKebabCase,
+  toConstantCase,
+  toTitleCase
+} from '../../utils/case';
 
 const input = ref('');
 
@@ -16,61 +25,18 @@ const handleCopy = (text: string, label: string) => {
   });
 };
 
-// 强健的文本分词器，提取出纯单词小写数组
-const tokenize = (str: string): string[] => {
-  if (!str) return [];
-  
-  // 1. 将驼峰（小写接大写，数字接大写，大写接大写但后跟小写）用空格断开
-  let formatted = str
-    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
-    .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2');
-  
-  // 2. 匹配所有的英文单词和数字
-  const words = formatted.match(/[a-zA-Z0-9]+/g);
-  if (!words) return [];
-  
-  // 3. 统一转换为小写返回
-  return words.map(w => w.toLowerCase());
-};
-
-// 各命名风格转换逻辑
-const camelCase = (words: string[]): string => {
-  if (words.length === 0) return '';
-  return words[0] + words.slice(1).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
-};
-
-const pascalCase = (words: string[]): string => {
-  return words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('');
-};
-
-const snakeCase = (words: string[]): string => {
-  return words.join('_');
-};
-
-const kebabCase = (words: string[]): string => {
-  return words.join('-');
-};
-
-const constantCase = (words: string[]): string => {
-  return words.map(w => w.toUpperCase()).join('_');
-};
-
-const titleCase = (words: string[]): string => {
-  return words.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-};
-
 // 风格列表定义 (平等渲染)
 const cases = computed(() => {
   const words = tokenize(input.value);
   const text = input.value;
 
   return [
-    { id: 'camel', name: 'camelCase (小驼峰)', value: text ? camelCase(words) : '' },
-    { id: 'pascal', name: 'PascalCase (大驼峰)', value: text ? pascalCase(words) : '' },
-    { id: 'snake', name: 'snake_case (蛇形命名)', value: text ? snakeCase(words) : '' },
-    { id: 'kebab', name: 'kebab-case (中划线命名)', value: text ? kebabCase(words) : '' },
-    { id: 'constant', name: 'CONSTANT_CASE (常量)', value: text ? constantCase(words) : '' },
-    { id: 'title', name: 'Title Case (首字母大写)', value: text ? titleCase(words) : '' },
+    { id: 'camel', name: 'camelCase (小驼峰)', value: text ? toCamelCase(words) : '' },
+    { id: 'pascal', name: 'PascalCase (大驼峰)', value: text ? toPascalCase(words) : '' },
+    { id: 'snake', name: 'snake_case (蛇形命名)', value: text ? toSnakeCase(words) : '' },
+    { id: 'kebab', name: 'kebab-case (中划线命名)', value: text ? toKebabCase(words) : '' },
+    { id: 'constant', name: 'CONSTANT_CASE (常量)', value: text ? toConstantCase(words) : '' },
+    { id: 'title', name: 'Title Case (首字母大写)', value: text ? toTitleCase(words) : '' },
     { id: 'upper', name: 'UPPERCASE (纯大写)', value: text ? text.toUpperCase() : '' },
     { id: 'lower', name: 'lowercase (纯小写)', value: text ? text.toLowerCase() : '' },
   ];
