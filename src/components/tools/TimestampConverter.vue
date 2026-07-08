@@ -1,207 +1,143 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch } from 'vue';
-import { toast } from 'onin-sdk';
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { toast } from 'onin-sdk'
+import { Copy, Eraser, Sparkles } from '@lucide/vue'
+import Button from '../ui/button/Button.vue'
+import Input from '../ui/input/Input.vue'
+import Separator from '../ui/separator/Separator.vue'
+import { formatDate, timestampToDate, dateToTimestamp } from '../../utils/datetime'
 
-// --- Current Time State ---
-const currentTime = ref(new Date());
-let timer: any = null;
+const currentTime = ref(new Date())
+let timer: any = null
 
-onMounted(() => {
-  timer = setInterval(() => {
-    currentTime.value = new Date();
-  }, 1000);
-});
+onMounted(() => { timer = setInterval(() => { currentTime.value = new Date() }, 1000) })
+onUnmounted(() => { if (timer) clearInterval(timer) })
 
-onUnmounted(() => {
-  if (timer) clearInterval(timer);
-});
-
-// --- Timestamp to Date Logic ---
-const tsInput = ref('');
-const tsUnit = ref<'s' | 'ms'>('s');
-const tsResult = ref('');
+const tsInput = ref('')
+const tsUnit = ref<'s' | 'ms'>('s')
+const tsResult = ref('')
 
 const convertTsToDate = () => {
-  if (!tsInput.value) return;
-  try {
-    const val = parseInt(tsInput.value);
-    if (isNaN(val)) throw new Error('无效数字');
-    
-    const date = tsUnit.value === 's' ? new Date(val * 1000) : new Date(val);
-    tsResult.value = formatDate(date);
-  } catch (e) {
-    tsResult.value = '转换失败: 无效的时间戳';
-  }
-};
+  if (!tsInput.value) return
+  try { tsResult.value = timestampToDate(tsInput.value, tsUnit.value) }
+  catch { tsResult.value = '转换失败: 无效的时间戳' }
+}
 
-// --- Date to Timestamp Logic ---
-const dtInput = ref('');
-const dtResultS = ref('');
-const dtResultMs = ref('');
+const dtInput = ref('')
+const dtResultS = ref('')
+const dtResultMs = ref('')
 
 const convertDateToTs = () => {
-  if (!dtInput.value) return;
+  if (!dtInput.value) return
   try {
-    const date = new Date(dtInput.value);
-    if (isNaN(date.getTime())) throw new Error('无效日期');
-    
-    dtResultS.value = Math.floor(date.getTime() / 1000).toString();
-    dtResultMs.value = date.getTime().toString();
-  } catch (e) {
-    dtResultS.value = '转换失败';
-    dtResultMs.value = '转换失败';
-  }
-};
-
-// --- Helper Functions ---
-const formatDate = (date: Date) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  const h = String(date.getHours()).padStart(2, '0');
-  const min = String(date.getMinutes()).padStart(2, '0');
-  const s = String(date.getSeconds()).padStart(2, '0');
-  return `${y}-${m}-${d} ${h}:${min}:${s}`;
-};
+    const res = dateToTimestamp(dtInput.value)
+    dtResultS.value = res.s
+    dtResultMs.value = res.ms
+  } catch { dtResultS.value = '转换失败'; dtResultMs.value = '转换失败' }
+}
 
 const handleNow = () => {
-  const now = new Date();
-  dtInput.value = formatDate(now);
-  convertDateToTs();
-  
-  // Also fill timestamp input for convenience
-  tsInput.value = Math.floor(now.getTime() / 1000).toString();
-  tsUnit.value = 's';
-  convertTsToDate();
-};
+  const now = new Date()
+  dtInput.value = formatDate(now)
+  convertDateToTs()
+  tsInput.value = Math.floor(now.getTime() / 1000).toString()
+  tsUnit.value = 's'
+  convertTsToDate()
+}
 
 const handleCopy = (text: string) => {
-  if (!text || text.includes('失败')) return;
-  navigator.clipboard.writeText(text).then(() => {
-    toast.success('已复制到剪贴板');
-  });
-};
+  if (!text || text.includes('失败')) return
+  navigator.clipboard.writeText(text).then(() => toast.success('已复制到剪贴板'))
+}
 
 const handleClear = () => {
-  tsInput.value = '';
-  tsResult.value = '';
-  dtInput.value = '';
-  dtResultS.value = '';
-  dtResultMs.value = '';
-};
+  tsInput.value = ''; tsResult.value = ''; dtInput.value = ''; dtResultS.value = ''; dtResultMs.value = ''
+}
 
-// Auto conversion when inputs change
-watch(tsInput, convertTsToDate);
-watch(tsUnit, convertTsToDate);
-watch(dtInput, convertDateToTs);
-
-// Initialize with current time
-onMounted(() => {
-  handleNow();
-});
+watch(tsInput, convertTsToDate)
+watch(tsUnit, convertTsToDate)
+watch(dtInput, convertDateToTs)
+onMounted(() => { handleNow() })
 </script>
 
 <template>
-  <div class="timestamp-converter">
-    <!-- Current Time Dashboard -->
-    <div class="dashboard-card">
-      <div class="clock-icon">🕒</div>
-      <div class="clock-main">
-        <div class="live-label">当前本地时间 (Live)</div>
-        <div class="live-time">{{ formatDate(currentTime) }}</div>
+  <div class="flex flex-col h-full p-4 gap-4 box-border overflow-y-auto">
+    <div class="flex items-center gap-6 p-5 rounded-xl border border-[var(--color-border)] bg-[var(--color-card)] backdrop-blur-md">
+      <div class="flex items-center justify-center size-16 rounded-xl bg-[var(--color-secondary)] border border-[var(--color-border)] text-3xl shrink-0">🕒</div>
+      <div class="flex-1">
+        <div class="text-[11px] text-[var(--color-muted-foreground)] uppercase tracking-wider mb-1">当前本地时间 (Live)</div>
+        <div class="text-2xl font-bold font-mono text-[var(--color-foreground)] tracking-tight">{{ formatDate(currentTime) }}</div>
       </div>
-      <div class="clock-side">
-        <div class="live-label">Unix 时间戳</div>
-        <div class="live-ts-row">
-          <code class="live-ts">{{ Math.floor(currentTime.getTime() / 1000) }}</code>
-          <button @click="handleCopy(Math.floor(currentTime.getTime() / 1000).toString())" class="mini-icon-btn" title="复制当前时间戳">
-            📋
-          </button>
+      <div class="pl-6 border-l border-[var(--color-border)]">
+        <div class="text-[11px] text-[var(--color-muted-foreground)] uppercase tracking-wider mb-1">Unix 时间戳</div>
+        <div class="flex items-center gap-3">
+          <code class="text-lg font-mono text-[var(--color-primary)] font-semibold">{{ Math.floor(currentTime.getTime() / 1000) }}</code>
+          <Button variant="ghost" size="icon-sm" @click="handleCopy(Math.floor(currentTime.getTime() / 1000).toString())" title="复制"><Copy class="size-3.5" /></Button>
         </div>
       </div>
     </div>
 
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <button @click="handleNow" class="action-btn">
-          <span>✨</span> 现在
-        </button>
-        <button @click="handleClear" class="action-btn ghost danger">
+    <div class="flex items-center justify-between bg-[var(--color-card)] p-2 px-4 rounded-xl border border-[var(--color-border)]">
+      <div class="flex items-center gap-2">
+        <Button variant="outline" size="sm" @click="handleNow">
+          <Sparkles class="size-3.5" />
+          现在
+        </Button>
+        <Button variant="ghost" size="sm" class="hover:text-red-400" @click="handleClear">
+          <Eraser class="size-3.5" />
           清空
-        </button>
+        </Button>
       </div>
     </div>
 
-    <div class="main-layout">
-      <!-- Timestamp to Date -->
-      <div class="pane">
-        <div class="pane-header">
+    <div class="flex-1 flex gap-3 min-h-0 items-stretch max-md:flex-col">
+      <div class="flex-1 flex flex-col bg-[var(--color-card)] rounded-xl border border-[var(--color-border)] overflow-hidden">
+        <div class="px-4 py-2 text-xs text-[var(--color-muted-foreground)] bg-[var(--color-secondary)]/30 border-b border-[var(--color-border)] uppercase tracking-wider h-9 flex items-center justify-between">
           <span>时间戳 ➔ 日期</span>
-          <div class="unit-selector">
-            <button 
-              :class="['unit-btn', { active: tsUnit === 's' }]" 
-              @click="tsUnit = 's'"
-            >秒 (s)</button>
-            <button 
-              :class="['unit-btn', { active: tsUnit === 'ms' }]" 
-              @click="tsUnit = 'ms'"
-            >毫秒 (ms)</button>
+          <div class="flex bg-[var(--color-muted)] p-0.5 rounded-md">
+            <Button variant="ghost" size="sm" :class="tsUnit === 's'  ? 'bg-[var(--color-background)] shadow-sm' : ''" @click="tsUnit = 's'">秒 (s)</Button>
+            <Button variant="ghost" size="sm" :class="tsUnit === 'ms'  ? 'bg-[var(--color-background)] shadow-sm' : ''" @click="tsUnit = 'ms'">毫秒 (ms)</Button>
           </div>
         </div>
-        <div class="pane-content">
-          <div class="input-group">
-            <label>Unix 时间戳</label>
-            <input 
-              v-model="tsInput" 
-              type="text" 
-              placeholder="请输入时间戳，例如: 1713196800"
-              class="custom-input"
-            />
+        <div class="p-5 flex flex-col gap-4">
+          <div class="flex flex-col gap-2">
+            <label class="text-xs text-[var(--color-muted-foreground)] font-medium">Unix 时间戳</label>
+            <Input v-model="tsInput" placeholder="请输入时间戳，例如: 1713196800" class="font-mono" />
           </div>
-          <div class="arrow-down">↓</div>
-          <div class="input-group">
-            <label>转换结果 (本地时间)</label>
-            <div class="result-display">
-              <input 
-                :value="tsResult" 
-                readonly 
-                class="custom-input readonly"
-              />
-              <button v-if="tsResult && !tsResult.includes('失败')" @click="handleCopy(tsResult)" class="copy-suffix">复制</button>
+          <div class="text-center text-[var(--color-muted-foreground)] opacity-30">↓</div>
+          <div class="flex flex-col gap-2">
+            <label class="text-xs text-[var(--color-muted-foreground)] font-medium">转换结果 (本地时间)</label>
+            <div class="relative flex">
+              <Input :model-value="tsResult" readonly class="font-mono pr-16" />
+              <Button v-if="tsResult && !tsResult.includes('失败')" variant="ghost" size="sm" class="absolute right-1 top-1/2 -translate-y-1/2 h-7" @click="handleCopy(tsResult)"><Copy class="size-3" /> 复制</Button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Date to Timestamp -->
-      <div class="pane">
-        <div class="pane-header">
+      <div class="flex-1 flex flex-col bg-[var(--color-card)] rounded-xl border border-[var(--color-border)] overflow-hidden">
+        <div class="px-4 py-2 text-xs text-[var(--color-muted-foreground)] bg-[var(--color-secondary)]/30 border-b border-[var(--color-border)] uppercase tracking-wider h-9 flex items-center">
           <span>日期 ➔ 时间戳</span>
         </div>
-        <div class="pane-content">
-          <div class="input-group">
-            <label>日期字符串</label>
-            <input 
-              v-model="dtInput" 
-              type="text" 
-              placeholder="例如: 2024-04-16 00:00:00"
-              class="custom-input"
-            />
+        <div class="p-5 flex flex-col gap-4">
+          <div class="flex flex-col gap-2">
+            <label class="text-xs text-[var(--color-muted-foreground)] font-medium">日期字符串</label>
+            <Input v-model="dtInput" placeholder="例如: 2024-04-16 00:00:00" class="font-mono" />
           </div>
-          <div class="arrow-down">↓</div>
-          <div class="results-stack">
-            <div class="input-group">
-              <label>时间戳 (秒)</label>
-              <div class="result-display">
-                <input :value="dtResultS" readonly class="custom-input readonly" />
-                <button v-if="dtResultS && !dtResultS.includes('失败')" @click="handleCopy(dtResultS)" class="copy-suffix">复制</button>
+          <div class="text-center text-[var(--color-muted-foreground)] opacity-30">↓</div>
+          <div class="flex flex-col gap-3">
+            <div class="flex flex-col gap-2">
+              <label class="text-xs text-[var(--color-muted-foreground)] font-medium">时间戳 (秒)</label>
+              <div class="relative flex">
+                <Input :model-value="dtResultS" readonly class="font-mono pr-16" />
+                <Button v-if="dtResultS && !dtResultS.includes('失败')" variant="ghost" size="sm" class="absolute right-1 top-1/2 -translate-y-1/2 h-7" @click="handleCopy(dtResultS)">复制</Button>
               </div>
             </div>
-            <div class="input-group" style="margin-top: 12px;">
-              <label>时间戳 (毫秒)</label>
-              <div class="result-display">
-                <input :value="dtResultMs" readonly class="custom-input readonly" />
-                <button v-if="dtResultMs && !dtResultMs.includes('失败')" @click="handleCopy(dtResultMs)" class="copy-suffix">复制</button>
+            <div class="flex flex-col gap-2">
+              <label class="text-xs text-[var(--color-muted-foreground)] font-medium">时间戳 (毫秒)</label>
+              <div class="relative flex">
+                <Input :model-value="dtResultMs" readonly class="font-mono pr-16" />
+                <Button v-if="dtResultMs && !dtResultMs.includes('失败')" variant="ghost" size="sm" class="absolute right-1 top-1/2 -translate-y-1/2 h-7" @click="handleCopy(dtResultMs)">复制</Button>
               </div>
             </div>
           </div>
@@ -210,194 +146,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.timestamp-converter {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 16px;
-  gap: 16px;
-  box-sizing: border-box;
-  overflow-y: auto;
-}
-
-/* Dashboard Card */
-.dashboard-card {
-  background: linear-gradient(135deg, rgba(63, 94, 251, 0.1) 0%, rgba(252, 70, 107, 0.1) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  backdrop-filter: blur(10px);
-}
-
-.clock-icon {
-  font-size: 32px;
-  background: rgba(255, 255, 255, 0.05);
-  width: 64px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.clock-main {
-  flex: 1;
-}
-
-.live-label {
-  font-size: 11px;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-bottom: 4px;
-}
-
-.live-time {
-  font-size: 24px;
-  font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-  color: #fff;
-  letter-spacing: -0.02em;
-}
-
-.clock-side {
-  padding-left: 24px;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.live-ts-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.live-ts {
-  font-size: 18px;
-  font-family: 'JetBrains Mono', monospace;
-  color: var(--accent-color);
-  font-weight: 600;
-}
-
-.mini-icon-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 12px;
-  transition: all 0.2s;
-}
-
-.mini-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.unit-selector {
-  display: flex;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2px;
-  border-radius: 6px;
-}
-
-.unit-btn {
-  background: transparent;
-  border: none;
-  color: var(--text-secondary);
-  font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.unit-btn.active {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
-
-.pane-content {
-  padding: 20px;
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.input-group label {
-  font-size: 12px;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.custom-input {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 10px 12px;
-  color: #fff;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  outline: none;
-  transition: all 0.2s;
-}
-
-.custom-input:focus {
-  border-color: var(--accent-color);
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.custom-input.readonly {
-  background: rgba(255, 255, 255, 0.02);
-  cursor: default;
-}
-
-.result-display {
-  position: relative;
-  display: flex;
-}
-
-.result-display .custom-input {
-  flex: 1;
-  padding-right: 60px;
-}
-
-.copy-suffix {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #fff;
-  font-size: 11px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.copy-suffix:hover {
-  background: var(--accent-color);
-  border-color: var(--accent-color);
-}
-
-.arrow-down {
-  text-align: center;
-  padding: 12px 0;
-  color: rgba(255, 255, 255, 0.2);
-  font-size: 20px;
-}
-</style>

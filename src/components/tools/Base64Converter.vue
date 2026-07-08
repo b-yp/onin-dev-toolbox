@@ -1,259 +1,161 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
-import { toast } from 'onin-sdk';
-import Editor from '../Editor.vue';
+import { ref, watch } from 'vue'
+import { toast } from 'onin-sdk'
+import { Copy, Eraser, ArrowRightLeft, FileText, File, ArrowRight, ArrowLeft } from '@lucide/vue'
+import Editor from '../Editor.vue'
+import Button from '../ui/button/Button.vue'
+import Switch from '../ui/switch/Switch.vue'
+import Separator from '../ui/separator/Separator.vue'
+import { encodeBase64, decodeBase64 } from '../../utils/base64'
 
-const input = ref('');
-const output = ref('');
-const error = ref<string | null>(null);
-const isUrlSafe = ref(false);
-const mode = ref<'text' | 'file'>('text');
+const input = ref('')
+const output = ref('')
+const error = ref<string | null>(null)
+const isUrlSafe = ref(false)
+const mode = ref<'text' | 'file'>('text')
 
-// Logic for Text Conversion
 const handleEncode = () => {
-  if (!input.value.trim()) return;
+  if (!input.value.trim()) return
   try {
-    const uint8 = new TextEncoder().encode(input.value);
-    let b64 = btoa(String.fromCharCode(...uint8));
-    if (isUrlSafe.value) {
-      b64 = b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-    }
-    output.value = b64;
-    error.value = null;
+    output.value = encodeBase64(input.value, isUrlSafe.value)
+    error.value = null
   } catch (e: any) {
-    error.value = '编码失败: ' + e.message;
+    error.value = '编码失败: ' + e.message
   }
-};
+}
 
 const handleDecode = () => {
-  if (!input.value.trim()) return;
+  if (!input.value.trim()) return
   try {
-    let b64 = input.value;
-    if (isUrlSafe.value) {
-      b64 = b64.replace(/-/g, '+').replace(/_/g, '/');
-      while (b64.length % 4) b64 += '=';
-    }
-    const binStr = atob(b64);
-    const uint8 = new Uint8Array(binStr.length);
-    for (let i = 0; i < binStr.length; i++) {
-      uint8[i] = binStr.charCodeAt(i);
-    }
-    output.value = new TextDecoder().decode(uint8);
-    error.value = null;
+    output.value = decodeBase64(input.value, isUrlSafe.value)
+    error.value = null
   } catch (e: any) {
-    error.value = '解码失败: 请确保输入是有效的 Base64 字符串';
+    error.value = '解码失败: 请确保输入是有效的 Base64 字符串'
   }
-};
+}
 
 const handleClear = () => {
-  input.value = '';
-  output.value = '';
-  error.value = null;
-};
+  input.value = ''
+  output.value = ''
+  error.value = null
+}
 
 const handleCopy = () => {
-  if (!output.value) return;
+  if (!output.value) return
   navigator.clipboard.writeText(output.value).then(() => {
-    toast.success('已复制到剪贴板');
-  });
-};
+    toast.success('已复制到剪贴板')
+  })
+}
 
 const handleSwap = () => {
-  const temp = input.value;
-  input.value = output.value;
-  output.value = temp;
-};
+  const temp = input.value
+  input.value = output.value
+  output.value = temp
+}
 
-// Logic for File Conversion
 const handleFileChange = (e: Event) => {
-  const file = (e.target as HTMLInputElement).files?.[0];
-  if (file) {
-    processFile(file);
-  }
-};
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (file) processFile(file)
+}
 
 const handleDrop = (e: DragEvent) => {
-  e.preventDefault();
-  const file = e.dataTransfer?.files[0];
-  if (file) {
-    processFile(file);
-  }
-};
+  e.preventDefault()
+  const file = e.dataTransfer?.files[0]
+  if (file) processFile(file)
+}
 
 const processFile = (file: File) => {
-  const reader = new FileReader();
+  const reader = new FileReader()
   reader.onload = (e) => {
-    output.value = e.target?.result as string;
-    input.value = `File: ${file.name} (${file.size} bytes)`;
-    error.value = null;
-  };
-  reader.onerror = () => {
-    error.value = '文件读取失败';
-  };
-  reader.readAsDataURL(file);
-};
-
-watch(isUrlSafe, () => {
-  // Re-encode/decode if url safe toggle changes
-  if (input.value && output.value) {
-    // Basic heuristic: if output looks like b64, re-encode? 
-    // Actually better to let user manually click.
+    output.value = e.target?.result as string
+    input.value = `File: ${file.name} (${file.size} bytes)`
+    error.value = null
   }
-});
+  reader.onerror = () => { error.value = '文件读取失败' }
+  reader.readAsDataURL(file)
+}
 </script>
 
 <template>
-  <div class="base64-converter">
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <div class="segmented-control">
-          <button 
-            :class="['seg-btn', { active: mode === 'text' }]" 
-            @click="mode = 'text'"
-          >文本</button>
-          <button 
-            :class="['seg-btn', { active: mode === 'file' }]" 
-            @click="mode = 'file'"
-          >文件</button>
+  <div class="flex flex-col h-full p-4 gap-4 box-border">
+    <div class="flex items-center justify-between bg-[var(--color-card)] p-2 px-4 rounded-xl border border-[var(--color-border)]">
+      <div class="flex items-center gap-3">
+        <div class="flex bg-[var(--color-muted)] p-0.5 rounded-lg">
+          <Button variant="ghost" size="sm" :class="mode === 'text' ? 'bg-[var(--color-background)] shadow-sm' : ''" @click="mode = 'text'">文本</Button>
+          <Button variant="ghost" size="sm" :class="mode === 'file' ? 'bg-[var(--color-background)] shadow-sm' : ''" @click="mode = 'file'">文件</Button>
         </div>
-        
-        <div class="divider"></div>
-        
-        <label class="checkbox-label">
-          <input type="checkbox" v-model="isUrlSafe" />
+
+        <Separator orientation="vertical" class="h-5" />
+
+        <label class="flex items-center gap-2 text-xs text-[var(--color-muted-foreground)] cursor-pointer select-none">
+          <Switch v-model="isUrlSafe" />
           <span>URL Safe</span>
         </label>
       </div>
-      
-      <div class="toolbar-right">
-        <button @click="handleClear" class="action-btn ghost danger">清空</button>
-        <button @click="handleCopy" class="action-btn accent">
-          <span>📋</span> 复制结果
-        </button>
+
+      <div class="flex items-center gap-2">
+        <Button variant="ghost" size="sm" class="hover:text-red-400" @click="handleClear">
+          <Eraser class="size-3.5" />
+          清空
+        </Button>
+        <Button variant="default" size="sm" @click="handleCopy">
+          <Copy class="size-3.5" />
+          复制结果
+        </Button>
       </div>
     </div>
 
-    <div class="main-layout" :class="{ 'file-mode': mode === 'file' }">
-      <!-- Input Pane -->
-      <div class="pane">
-        <div class="pane-header">
-          {{ mode === 'text' ? '输入内容' : '待转换文件' }}
-          <div class="pane-actions" v-if="mode === 'text'">
-            <button @click="handleEncode" class="mini-btn primary">编码</button>
-            <button @click="handleDecode" class="mini-btn">解码</button>
+    <div class="flex-1 flex gap-3 min-h-0 items-stretch max-md:flex-col">
+      <div class="flex-1 flex flex-col bg-[var(--color-card)] rounded-xl border border-[var(--color-border)] overflow-hidden">
+        <div class="px-4 py-2 text-xs text-[var(--color-muted-foreground)] bg-[var(--color-secondary)]/30 border-b border-[var(--color-border)] uppercase tracking-wider h-9 flex items-center justify-between">
+          <span>{{ mode === 'text' ? '输入内容' : '待转换文件' }}</span>
+          <div v-if="mode === 'text'" class="flex gap-1">
+            <Button variant="default" size="sm" class="h-6 text-[11px]" @click="handleEncode"><ArrowRight class="size-3" /> 编码</Button>
+            <Button variant="outline" size="sm" class="h-6 text-[11px]" @click="handleDecode"><ArrowLeft class="size-3" /> 解码</Button>
           </div>
         </div>
-        
-        <div class="pane-content">
+
+        <div class="flex-1 overflow-hidden">
           <template v-if="mode === 'text'">
             <Editor v-model="input" placeholder="输入待编码或解码的内容..." />
           </template>
-          
           <template v-else>
-            <div 
-              class="drop-zone" 
-              @dragover.prevent 
+            <div
+              class="h-[calc(100%-32px)] border-2 border-dashed border-[var(--color-border)] m-4 rounded-xl flex flex-col items-center justify-center text-[var(--color-muted-foreground)] transition-all hover:bg-white/[0.03] hover:border-blue-500 hover:text-white cursor-pointer"
+              @dragover.prevent
               @drop="handleDrop"
-              @click="$refs.fileInput.click()"
+              @click="($refs.fileInput as HTMLInputElement)?.click()"
             >
-              <input 
-                type="file" 
-                ref="fileInput" 
-                style="display: none" 
-                @change="handleFileChange" 
-              />
-              <div class="drop-icon">📁</div>
+              <input type="file" ref="fileInput" style="display:none" @change="handleFileChange" />
+              <span class="text-5xl mb-3 opacity-60">📁</span>
               <p v-if="!input.includes('File:')">点击或拖拽文件到此处</p>
-              <p v-else class="file-info">{{ input }}</p>
+              <p v-else class="text-blue-400 font-mono">{{ input }}</p>
             </div>
           </template>
         </div>
       </div>
 
-      <!-- Swap button between panes -->
-      <button 
+      <Button
         v-if="mode === 'text'"
-        @click="handleSwap" 
-        class="spacer-btn" 
-        title="交换输入输出"
+        variant="outline" size="icon"
+        class="self-center shrink-0 hover:bg-blue-600 hover:border-blue-600 hover:text-white hover:rotate-180 transition-all duration-300 max-md:rotate-90 max-md:hover:rotate-270"
+        @click="handleSwap" title="交换输入输出"
       >
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M7 16l-4-4 4-4M17 8l4 4-4 4M3 12h18" />
-        </svg>
-      </button>
-
-      <!-- Static spacer for file mode -->
-      <div v-else class="spacer-arrow static">
-        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg>
+        <ArrowRightLeft class="size-5" />
+      </Button>
+      <div v-else class="self-center shrink-0 text-[var(--color-muted-foreground)]">
+        <ArrowRightLeft class="size-6 opacity-30" />
       </div>
 
-      <!-- Output Pane -->
-      <div class="pane">
-        <div class="pane-header">结果 (Base64)</div>
-        <div class="pane-content">
+      <div class="flex-1 flex flex-col bg-[var(--color-card)] rounded-xl border border-[var(--color-border)] overflow-hidden">
+        <div class="px-4 py-2 text-xs text-[var(--color-muted-foreground)] bg-[var(--color-secondary)]/30 border-b border-[var(--color-border)] uppercase tracking-wider h-9 flex items-center">
+          结果 (Base64)
+        </div>
+        <div class="flex-1 overflow-hidden">
           <Editor v-if="!error" v-model="output" readonly />
-          <div v-else class="error-state">
-            <div class="error-msg">{{ error }}</div>
-          </div>
+          <div v-else class="h-full flex items-center justify-center text-red-500 text-sm p-5 text-center">{{ error }}</div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.base64-converter {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 16px;
-  gap: 16px;
-  box-sizing: border-box;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text-secondary);
-  cursor: pointer;
-}
-
-.checkbox-label input {
-  accent-color: var(--accent-color);
-}
-
-.drop-zone {
-  height: 100%;
-  border: 2px dashed rgba(255, 255, 255, 0.1);
-  margin: 16px;
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.drop-zone:hover {
-  background: rgba(255, 255, 255, 0.02);
-  border-color: var(--accent-color);
-  color: #fff;
-}
-
-.drop-icon {
-  font-size: 48px;
-  margin-bottom: 16px;
-  opacity: 0.5;
-}
-
-.file-info {
-  color: #60a5fa;
-  font-family: monospace;
-}
-</style>

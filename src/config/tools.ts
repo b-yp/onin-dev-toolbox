@@ -31,17 +31,10 @@ export const TOOLS: Tool[] = [
     category: 'Transform'
   },
   {
-    id: 'md5',
-    name: 'MD5 加密',
-    description: '计算字符串的 MD5 哈希值',
-    icon: 'MD5',
-    category: 'Security'
-  },
-  {
-    id: 'sha256',
-    name: 'SHA256 加密',
-    description: '生成安全的 SHA256 哈希散列',
-    icon: 'SHA',
+    id: 'hash-calculator',
+    name: '哈希计算器',
+    description: '计算 MD5、SHA-1、SHA-256、SHA-512 等哈希值',
+    icon: 'HASH',
     category: 'Security'
   },
   {
@@ -78,6 +71,48 @@ export const TOOLS: Tool[] = [
     description: '生成通用唯一识别码 (v4)',
     icon: 'ID',
     category: 'Security'
+  },
+  {
+    id: 'text-diff',
+    name: '文本对比差异',
+    description: '对比两段文本的差异，支持双栏与单栏视图',
+    icon: 'DIFF',
+    category: 'Text'
+  },
+  {
+    id: 'qrcode',
+    name: '二维码工具',
+    description: '二维码的实时生成、下载与图片/截图解码',
+    icon: 'QR',
+    category: 'Network'
+  },
+  {
+    id: 'password-generator',
+    name: '密码与密钥生成器',
+    description: '生成强随机密码、开发密钥 Token，排除混淆字符',
+    icon: 'KEY',
+    category: 'Security'
+  },
+  {
+    id: 'cron-generator',
+    name: 'Cron 表达式助手',
+    description: 'Cron 表达式的中文解析、运行时间预测与可视化生成',
+    icon: 'CRON',
+    category: 'Transform'
+  },
+  {
+    id: 'url-parser',
+    name: 'URL 解析与重构器',
+    description: '双向拆解 URL 各项结构，支持可视化增删、排序与重构参数',
+    icon: 'LINK',
+    category: 'Transform'
+  },
+  {
+    id: 'yaml-json-converter',
+    name: 'YAML / JSON 互转',
+    description: 'YAML 与 JSON 格式的快速双向互转，支持语法错误校验与缩进自定义',
+    icon: 'Y/J',
+    category: 'Transform'
   }
 ];
 
