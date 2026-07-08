@@ -1,3 +1,19 @@
+# [1.3.0](https://github.com/b-yp/onin-dev-toolbox/compare/v1.2.0...v1.3.0) (2026-07-08)
+
+
+### Features
+
+* add case converter tool ([1ac2875](https://github.com/b-yp/onin-dev-toolbox/commit/1ac2875b97ae262e18de3162acc5d88b39576690))
+* add cron expression tool ([d640024](https://github.com/b-yp/onin-dev-toolbox/commit/d6400241e1e80d14921f4e5acb9fc1009d8fe3ea))
+* add hash calculator tool ([abe8702](https://github.com/b-yp/onin-dev-toolbox/commit/abe87023f24f398615216a6bbbbcc5a1dd1c6786))
+* add jwt decoder tool ([7da010c](https://github.com/b-yp/onin-dev-toolbox/commit/7da010cb0cfad4f35bfe41e0eabf6dd4ae7a96d7))
+* add password generator tool ([89ba9d2](https://github.com/b-yp/onin-dev-toolbox/commit/89ba9d28f3a2eb3a67c5c560935e6a39c7d312ab))
+* add qrcode tool ([49746c6](https://github.com/b-yp/onin-dev-toolbox/commit/49746c68825ed35488a0a941b0d7f52ec8642687))
+* add regex test tool ([290d207](https://github.com/b-yp/onin-dev-toolbox/commit/290d207fc949bea57479e70f8ea6079190065a38))
+* add text diff tool ([fe6f7bc](https://github.com/b-yp/onin-dev-toolbox/commit/fe6f7bcd61417cea55e54a6d58554d8c279f2bc0))
+* add url parser tool ([455592d](https://github.com/b-yp/onin-dev-toolbox/commit/455592d9a1252eb8b837d1f7954f4a1fa46f0e23))
+* add yaml json converter tool ([4ceda76](https://github.com/b-yp/onin-dev-toolbox/commit/4ceda764b1798852c1897df2174ccb0454a8837e))
+
 # [1.2.0](https://github.com/b-yp/onin-dev-toolbox/compare/v1.1.0...v1.2.0) (2026-04-18)
 
 
