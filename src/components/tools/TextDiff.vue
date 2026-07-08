@@ -1,6 +1,31 @@
 <script setup lang="ts">
 import { ref, computed, watch, onBeforeUnmount } from 'vue';
-import { toast } from 'onin-sdk';
+import { toast as oninToast } from 'onin-sdk';
+
+// 兜底代理 toast，防止在非 Onin 运行时环境下抛出 Uncaught 异常
+const toast = {
+  success: (msg: string) => {
+    try {
+      oninToast.success(msg)?.catch?.((err: any) => console.log('Toast Success:', msg, err));
+    } catch (e) {
+      console.log('Toast Success:', msg);
+    }
+  },
+  error: (msg: string) => {
+    try {
+      oninToast.error(msg)?.catch?.((err: any) => console.error('Toast Error:', msg, err));
+    } catch (e) {
+      console.error('Toast Error:', msg);
+    }
+  },
+  info: (msg: string) => {
+    try {
+      oninToast.info(msg)?.catch?.((err: any) => console.log('Toast Info:', msg, err));
+    } catch (e) {
+      console.log('Toast Info:', msg);
+    }
+  }
+};
 import Editor from '../Editor.vue';
 import { computeSplitDiff, computeInlineDiff } from '../../utils/diff';
 

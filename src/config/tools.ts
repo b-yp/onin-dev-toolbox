@@ -78,6 +78,13 @@ export const TOOLS: Tool[] = [
     description: '对比两段文本的差异，支持双栏与单栏视图',
     icon: 'DIFF',
     category: 'Text'
+  },
+  {
+    id: 'qrcode',
+    name: '二维码工具',
+    description: '二维码的实时生成、下载与图片/截图解码',
+    icon: 'QR',
+    category: 'Network'
   }
 ];
 

@@ -35,6 +35,8 @@ const ToolComponent = computed(() => {
       return defineAsyncComponent(() => import('./tools/RegexTester.vue'));
     case 'text-diff':
       return defineAsyncComponent(() => import('./tools/TextDiff.vue'));
+    case 'qrcode':
+      return defineAsyncComponent(() => import('./tools/QrCode.vue'));
     // Add more tools here as they are implemented
     default:
       return null;
