@@ -99,6 +99,13 @@ export const TOOLS: Tool[] = [
     description: 'Cron 表达式的中文解析、运行时间预测与可视化生成',
     icon: 'CRON',
     category: 'Transform'
+  },
+  {
+    id: 'url-parser',
+    name: 'URL 解析与重构器',
+    description: '双向拆解 URL 各项结构，支持可视化增删、排序与重构参数',
+    icon: 'LINK',
+    category: 'Transform'
   }
 ];
 
