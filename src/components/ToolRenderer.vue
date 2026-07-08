@@ -37,6 +37,8 @@ const ToolComponent = computed(() => {
       return defineAsyncComponent(() => import('./tools/TextDiff.vue'));
     case 'qrcode':
       return defineAsyncComponent(() => import('./tools/QrCode.vue'));
+    case 'password-generator':
+      return defineAsyncComponent(() => import('./tools/PasswordGenerator.vue'));
     // Add more tools here as they are implemented
     default:
       return null;

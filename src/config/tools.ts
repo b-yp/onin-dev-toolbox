@@ -85,6 +85,13 @@ export const TOOLS: Tool[] = [
     description: '二维码的实时生成、下载与图片/截图解码',
     icon: 'QR',
     category: 'Network'
+  },
+  {
+    id: 'password-generator',
+    name: '密码与密钥生成器',
+    description: '生成强随机密码、开发密钥 Token，排除混淆字符',
+    icon: 'KEY',
+    category: 'Security'
   }
 ];
 
