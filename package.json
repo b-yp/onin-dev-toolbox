@@ -8,7 +8,9 @@
     "build": "npm run build:index && npm run build:background",
     "pack:plugin": "npm run build && bestzip plugin.zip manifest.json icon.svg dist",
     "dev": "vite",
+    "dev:web": "vite --mode web",
     "build:index": "vite build",
+    "build:web": "vite build --mode web",
     "release": "semantic-release",
     "test": "vitest run"
   },

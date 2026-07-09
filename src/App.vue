@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { storage } from 'onin-sdk'
+import Toaster from './components/ui/toast/Toaster.vue'
 import { TOOLS, CATEGORIES, type ToolCategory, type Tool } from './config/tools'
 import Sidebar from './components/Sidebar.vue'
 import SearchBar from './components/SearchBar.vue'
@@ -8,6 +9,8 @@ import ToolCard from './components/ToolCard.vue'
 import ToolRenderer from './components/ToolRenderer.vue'
 import Button from './components/ui/button/Button.vue'
 import { ArrowLeft } from '@lucide/vue'
+
+const isWebMode = typeof window !== 'undefined' && !(window as any).__TAURI__
 
 const props = defineProps<{
   pluginName: string
@@ -139,5 +142,6 @@ const handleBack = () => {
         />
       </template>
     </main>
+    <Toaster v-if="isWebMode" />
   </div>
 </template>
