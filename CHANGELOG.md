@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/b-yp/onin-dev-toolbox/compare/v1.3.0...v1.4.0) (2026-07-09)
+
+
+### Features
+
+* support web browser compatibility and add custom toaster ([8aa2006](https://github.com/b-yp/onin-dev-toolbox/commit/8aa20063fe37f52268280b914a2ed638d8a35fae))
+
 # [1.3.0](https://github.com/b-yp/onin-dev-toolbox/compare/v1.2.0...v1.3.0) (2026-07-08)
 
 
