@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/b-yp/onin-dev-toolbox/compare/v1.5.0...v1.6.0) (2026-07-13)
+
+
+### Features
+
+* add feedback entrance and github issue template redirection ([115b58d](https://github.com/b-yp/onin-dev-toolbox/commit/115b58db2bfaaa7a71518777d46f3e6bf323cd1f))
+
 # [1.5.0](https://github.com/b-yp/onin-dev-toolbox/compare/v1.4.0...v1.5.0) (2026-07-13)
 
 
