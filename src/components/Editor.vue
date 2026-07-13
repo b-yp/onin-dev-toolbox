@@ -12,7 +12,7 @@ const props = defineProps<{
   modelValue: string
   readonly?: boolean
   placeholder?: string
-  language?: 'json' | 'yaml'
+  language?: 'json' | 'yaml' | 'text'
 }>()
 
 const emit = defineEmits<{
@@ -57,7 +57,7 @@ onMounted(() => {
         ...historyKeymap,
         ...foldKeymap,
       ]),
-      props.language === 'yaml' ? yaml() : json(),
+      ...(props.language === 'yaml' ? [yaml()] : props.language === 'json' ? [json()] : []),
       oneDark,
       EditorView.lineWrapping,
       EditorState.readOnly.of(!!props.readonly),
