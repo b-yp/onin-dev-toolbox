@@ -8,6 +8,7 @@ import SearchBar from './components/SearchBar.vue'
 import ToolCard from './components/ToolCard.vue'
 import ToolRenderer from './components/ToolRenderer.vue'
 import Button from './components/ui/button/Button.vue'
+import FeedbackModal from './components/FeedbackModal.vue'
 import { ArrowLeft } from '@lucide/vue'
 
 const isWebMode = typeof window !== 'undefined' && !(window as any).__TAURI__
@@ -21,6 +22,7 @@ const activeCategory = ref<ToolCategory | 'All'>('All')
 const searchQuery = ref('')
 const favorites = ref<Set<string>>(new Set())
 const currentToolId = ref<string | null>(null)
+const isFeedbackOpen = ref(false)
 
 const loadFavorites = async () => {
   try {
@@ -100,6 +102,7 @@ const handleBack = () => {
       :categories="CATEGORIES"
       :plugin-name="props.pluginName"
       @select-category="selectCategory"
+      @click-feedback="isFeedbackOpen = true"
     />
 
     <main class="flex-1 flex flex-col overflow-hidden">
@@ -143,5 +146,6 @@ const handleBack = () => {
       </template>
     </main>
     <Toaster v-if="isWebMode" />
+    <FeedbackModal :show="isFeedbackOpen" @close="isFeedbackOpen = false" />
   </div>
 </template>
