@@ -113,6 +113,13 @@ export const TOOLS: Tool[] = [
     description: 'YAML 与 JSON 格式的快速双向互转，支持语法错误校验与缩进自定义',
     icon: 'Y/J',
     category: 'Transform'
+  },
+  {
+    id: 'docker-compose-converter',
+    name: 'Docker / Compose 互转',
+    description: 'Docker run 命令行与 Docker Compose 配置的相互转换',
+    icon: 'DKR',
+    category: 'Transform'
   }
 ];
 

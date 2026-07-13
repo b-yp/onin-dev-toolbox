@@ -47,6 +47,8 @@ const ToolComponent = computed(() => {
       return defineAsyncComponent(() => import('./tools/UrlParser.vue'))
     case 'yaml-json-converter':
       return defineAsyncComponent(() => import('./tools/YamlJsonConverter.vue'))
+    case 'docker-compose-converter':
+      return defineAsyncComponent(() => import('./tools/DockerComposeConverter.vue'))
     default:
       return null
   }
