@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { type ToolCategory } from '../config/tools'
-import { Box, Star, ArrowRightLeft, Shield, FileText, Globe } from '@lucide/vue'
+import { Box, Star, ArrowRightLeft, Shield, FileText, Globe, MessageSquare } from '@lucide/vue'
 import { cn } from '../lib/utils'
 
 const props = defineProps<{
@@ -9,7 +9,7 @@ const props = defineProps<{
   pluginName: string
 }>()
 
-const emit = defineEmits(['selectCategory'])
+const emit = defineEmits(['selectCategory', 'clickFeedback'])
 
 const categoryIcons: Record<string, any> = {
   'All': Box,
@@ -46,5 +46,15 @@ const categoryIcons: Record<string, any> = {
         <span class="max-md:hidden">{{ cat.name }}</span>
       </button>
     </nav>
+
+    <div class="mt-auto p-2 border-t border-[var(--color-border)] max-md:p-1">
+      <button
+        @click="emit('clickFeedback')"
+        class="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer text-left border-none bg-transparent text-[var(--color-muted-foreground)] hover:bg-[var(--color-secondary)]/50 hover:text-[var(--color-foreground)] max-md:px-2 max-md:justify-center"
+      >
+        <MessageSquare class="size-5 shrink-0" />
+        <span class="max-md:hidden">问题与反馈</span>
+      </button>
+    </div>
   </aside>
 </template>
